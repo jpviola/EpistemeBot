@@ -83,11 +83,17 @@ export default function ExcalidrawTool({ onSave }: Props) {
   return (
     <div style={{ height: 420, display: "flex", flexDirection: "column" }}>
       <div style={{ display: "flex", gap: 8, padding: 8 }}>
-        <button onClick={exportToJson}>Autosave JSON</button>
-        <button onClick={exportToSvg}>Subir SVG</button>
+        <button onClick={exportToJson} aria-label="Guardar JSON del canvas en el servidor">
+          Autosave JSON
+        </button>
+        <button onClick={exportToSvg} aria-label="Subir SVG exportado del canvas al servidor">
+          Subir SVG
+        </button>
         <label style={{ display: "inline-flex", alignItems: "center", gap: 8 }}>
-          <input ref={fileInputRef} type="file" accept="application/json" style={{ display: "none" }} onChange={e => importFromFile(e.target.files ? e.target.files[0] : null)} />
-          <button onClick={() => fileInputRef.current?.click()}>Importar JSON</button>
+          <input ref={fileInputRef} type="file" accept="application/json" style={{ display: "none" }} onChange={e => importFromFile(e.target.files ? e.target.files[0] : null)} aria-label="Seleccionar archivo JSON para importar al canvas" />
+          <button onClick={() => fileInputRef.current?.click()} aria-label="Importar JSON desde archivo local">
+            Importar JSON
+          </button>
         </label>
         <span style={{ color: "#666" }}>{message}</span>
       </div>

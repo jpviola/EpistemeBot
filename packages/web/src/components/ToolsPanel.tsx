@@ -96,17 +96,30 @@ export default function ToolsPanel({ open = true, onClose, sessionId, guestId }:
   }
 
   return (
-    <div style={{ position: "fixed", right: 16, top: 64, width: 420, maxHeight: "75vh", background: "white", boxShadow: "0 6px 18px rgba(0,0,0,0.12)", borderRadius: 8, padding: 12, zIndex: 200 }}>
+    <div 
+      style={{ position: "fixed", right: 16, top: 64, width: 420, maxHeight: "75vh", background: "white", boxShadow: "0 6px 18px rgba(0,0,0,0.12)", borderRadius: 8, padding: 12, zIndex: 200 }}
+      role="dialog"
+      aria-labelledby="tools-panel-title"
+      aria-modal="true"
+    >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-        <strong>Herramientas</strong>
+        <strong id="tools-panel-title">Herramientas</strong>
         <div>
-          <button onClick={() => onClose?.()} style={{ marginRight: 8 }}>Cerrar</button>
+          <button onClick={() => onClose?.()} style={{ marginRight: 8 }} aria-label="Cerrar panel de herramientas">
+            Cerrar
+          </button>
         </div>
       </div>
 
       <div style={{ marginBottom: 8 }}>
-        <label style={{ display: "block", marginBottom: 6 }}>Tipo</label>
-        <select value={type} onChange={(e) => setType(e.target.value)} style={{ width: "100%" }}>
+        <label htmlFor="tool-type-select" style={{ display: "block", marginBottom: 6 }}>Tipo</label>
+        <select 
+          id="tool-type-select"
+          value={type} 
+          onChange={(e) => setType(e.target.value)} 
+          style={{ width: "100%" }}
+          aria-describedby="tool-type-description"
+        >
           <option value="concept-map">Mapa conceptual (Mermaid)</option>
           <option value="timeline">Línea de tiempo (JSON)</option>
           <option value="infographic">Infografía (JSON)</option>
@@ -114,16 +127,33 @@ export default function ToolsPanel({ open = true, onClose, sessionId, guestId }:
           <option value="svg-map">SVG (directo)</option>
           <option value="excalidraw">Canvas: Excalidraw</option>
         </select>
+        <div id="tool-type-description" style={{ fontSize: "0.9em", color: "#666", marginTop: 4 }}>
+          Selecciona el tipo de herramienta para generar contenido visual.
+        </div>
       </div>
 
       <div style={{ marginBottom: 8 }}>
-        <label style={{ display: "block", marginBottom: 6 }}>Prompt</label>
-        <textarea value={prompt} onChange={(e) => setPrompt(e.target.value)} rows={5} style={{ width: "100%" }} />
+        <label htmlFor="tool-prompt-textarea" style={{ display: "block", marginBottom: 6 }}>Prompt</label>
+        <textarea 
+          id="tool-prompt-textarea"
+          value={prompt} 
+          onChange={(e) => setPrompt(e.target.value)} 
+          rows={5} 
+          style={{ width: "100%" }}
+          aria-describedby="prompt-description"
+        />
+        <div id="prompt-description" style={{ fontSize: "0.9em", color: "#666", marginTop: 4 }}>
+          Describe lo que quieres generar.
+        </div>
       </div>
 
       <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-        <button onClick={generate} disabled={loading}>{loading ? "Generando…" : "Generar"}</button>
-        <button onClick={() => { setPrompt(""); setResult(null); }}>Limpiar</button>
+        <button onClick={generate} disabled={loading} aria-label={loading ? "Generando contenido" : "Generar contenido"}>
+          {loading ? "Generando…" : "Generar"}
+        </button>
+        <button onClick={() => { setPrompt(""); setResult(null); }} aria-label="Limpiar prompt y resultado">
+          Limpiar
+        </button>
       </div>
 
       <div style={{ maxHeight: 320, overflow: "auto", borderTop: "1px solid #eee", paddingTop: 8 }}>
@@ -139,11 +169,11 @@ export default function ToolsPanel({ open = true, onClose, sessionId, guestId }:
                 </div>
                 {attachments.length > 0 && (
                   <div style={{ marginTop: 16, borderTop: "1px solid #eee", paddingTop: 8 }}>
-                    <h4>Attachments</h4>
-                    <ul style={{ listStyle: "none", padding: 0 }}>
+                    <h4 id="attachments-heading">Attachments</h4>
+                    <ul role="list" aria-labelledby="attachments-heading" style={{ listStyle: "none", padding: 0 }}>
                       {attachments.map((att) => (
-                        <li key={att.id} style={{ marginBottom: 4 }}>
-                          <a href={att.url} target="_blank" rel="noopener noreferrer" style={{ color: "#0070f3" }}>
+                        <li key={att.id} role="listitem" style={{ marginBottom: 4 }}>
+                          <a href={att.url} target="_blank" rel="noopener noreferrer" style={{ color: "#0070f3" }} aria-label={`Descargar ${att.filename} creado el ${new Date(att.createdAt).toLocaleString()}`}>
                             {att.filename}
                           </a> ({new Date(att.createdAt).toLocaleString()})
                         </li>
