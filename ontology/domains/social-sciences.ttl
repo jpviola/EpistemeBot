@@ -1,0 +1,152 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix sem:  <https://semhum.edu/ontology/core#> .
+@prefix ped:  <https://semhum.edu/ontology/pedagogy#> .
+@prefix fig:  <https://semhum.edu/data/figures/> .
+@prefix con:  <https://semhum.edu/data/concepts/> .
+
+# ─────────────────────────────────────────────
+# DOMINIO: Ciencias Sociales
+# ─────────────────────────────────────────────
+
+# ── Sociólogos / Cientistas sociales ────────
+
+fig:Durkheim a sem:Sociologist ;
+    rdfs:label "Émile Durkheim"@es ;
+    sem:born 1858 ; sem:died 1917 ;
+    sem:nationality "francés" ;
+    sem:description "Fundador de la sociología científica. Definió el hecho social como cosa externa al individuo, y estudió la cohesión social, la anomia y el suicidio."@es ;
+    sem:develops con:SocialFact, con:Anomie, con:Solidarity .
+
+fig:Weber a sem:Sociologist ;
+    rdfs:label "Max Weber"@es ;
+    sem:born 1864 ; sem:died 1920 ;
+    sem:nationality "alemán" ;
+    sem:description "Sociólogo alemán. Analizó la racionalización moderna, la burocracia, la ética protestante y el capitalismo, y propuso la comprensión (Verstehen) como método sociológico."@es ;
+    sem:develops con:Bureaucracy, con:RationalAction, con:Charisma ;
+    sem:critiques fig:Durkheim .
+
+fig:Bourdieu a sem:Sociologist ;
+    rdfs:label "Pierre Bourdieu"@es ;
+    sem:born 1930 ; sem:died 2002 ;
+    sem:nationality "francés" ;
+    sem:description "Sociólogo francés. Desarrolló conceptos como habitus, campo y capital cultural para analizar la reproducción de las desigualdades sociales."@es ;
+    sem:develops con:Habitus, con:CulturalCapital, con:SocialField .
+
+fig:Gramsci a sem:Sociologist ;
+    rdfs:label "Antonio Gramsci"@es ;
+    sem:born 1891 ; sem:died 1937 ;
+    sem:nationality "italiano" ;
+    sem:description "Marxista italiano, teórico de la hegemonía cultural. Sus Cuadernos de la cárcel son fundamentales para entender cómo el dominio se ejerce por consenso además de por coerción."@es ;
+    sem:develops con:Hegemony, con:Ideology .
+
+fig:Simmel a sem:Sociologist ;
+    rdfs:label "Georg Simmel"@es ;
+    sem:born 1858 ; sem:died 1918 ;
+    sem:nationality "alemán" ;
+    sem:description "Sociólogo alemán. Analizó la vida metropolitana, el dinero y las formas sociales. Pionero de la microsociología."@es .
+
+fig:Habermas a sem:Sociologist ;
+    rdfs:label "Jürgen Habermas"@es ;
+    sem:born 1929 ;
+    sem:nationality "alemán" ;
+    sem:description "Filósofo y sociólogo de la Escuela de Frankfurt. Desarrolló la Teoría de la acción comunicativa y el concepto de esfera pública."@es ;
+    sem:develops con:CommunicativeAction, con:PublicSphere .
+
+fig:Foucault a sem:Sociologist ;
+    rdfs:label "Michel Foucault"@es ;
+    sem:born 1926 ; sem:died 1984 ;
+    sem:nationality "francés" ;
+    sem:description "Filósofo y teórico social. Analizó las relaciones entre poder, saber y subjetividad. Estudió las instituciones disciplinarias (cárcel, hospital, escuela) y la biopolítica."@es ;
+    sem:develops con:Biopolitics, con:Discourse, con:Discipline .
+
+# ── Conceptos sociológicos ──────────────────
+
+con:SocialFact a sem:Concept ;
+    rdfs:label "Hecho social"@es ;
+    ped:difficulty 2 ;
+    sem:description "Concepto de Durkheim: maneras de actuar, pensar y sentir externas al individuo que ejercen coerción. Deben estudiarse como cosas, con método científico."@es .
+
+con:Anomie a sem:Concept ;
+    rdfs:label "Anomia"@es ;
+    ped:difficulty 2 ;
+    sem:description "Concepto de Durkheim: estado de desregulación social en el que las normas colectivas no logran orientar el comportamiento individual. Produce desorientación y puede llevar al suicidio."@es ;
+    sem:presupposes con:SocialFact .
+
+con:Solidarity a sem:Concept ;
+    rdfs:label "Solidaridad social"@es ;
+    ped:difficulty 1 ;
+    sem:description "Durkheim distingue solidaridad mecánica (sociedades tradicionales, por semejanza) y orgánica (sociedades industriales, por complementariedad de funciones)."@es .
+
+con:Habitus a sem:Concept ;
+    rdfs:label "Habitus"@es ;
+    ped:difficulty 3 ;
+    sem:description "Concepto de Bourdieu: sistema de disposiciones duraderas y transferibles incorporadas en el agente a través de su trayectoria social. Orienta percepciones, juicios y acciones sin ser totalmente consciente."@es .
+
+con:CulturalCapital a sem:Concept ;
+    rdfs:label "Capital cultural"@es ;
+    ped:difficulty 2 ;
+    sem:description "Concepto de Bourdieu: recursos simbólicos que confieren ventajas sociales. Existe en estado incorporado (disposiciones), objetivado (bienes culturales) e institucionalizado (títulos)."@es ;
+    sem:presupposes con:Habitus .
+
+con:SocialField a sem:Concept ;
+    rdfs:label "Campo social"@es ;
+    ped:difficulty 3 ;
+    sem:description "Concepto de Bourdieu: espacio social estructurado por relaciones de fuerza entre agentes que compiten por capitales específicos. Cada campo (artístico, académico, político) tiene sus propias reglas."@es ;
+    sem:presupposes con:Habitus .
+
+con:Hegemony a sem:Concept ;
+    rdfs:label "Hegemonía"@es ;
+    ped:difficulty 2 ;
+    sem:description "Concepto de Gramsci: dominación que se ejerce principalmente mediante el consenso y la dirección cultural, no solo por la fuerza. La clase dominante logra que sus valores sean aceptados como universales."@es ;
+    sem:presupposes con:Ideology .
+
+con:Ideology a sem:Concept ;
+    rdfs:label "Ideología"@es ;
+    ped:difficulty 2 ;
+    sem:description "Sistema de ideas que representa los intereses de una clase social como intereses universales. En Marx: falsa conciencia. En Althusser: aparatos ideológicos de Estado. En Gramsci: hegemonía."@es .
+
+con:Bureaucracy a sem:Concept ;
+    rdfs:label "Burocracia"@es ;
+    ped:difficulty 2 ;
+    sem:description "Concepto de Weber: forma de organización racional-legal caracterizada por jerarquía, normas escritas, impersonalidad y especialización. Es la forma dominante de organización en la modernidad."@es .
+
+con:RationalAction a sem:Concept ;
+    rdfs:label "Acción racional"@es ;
+    ped:difficulty 2 ;
+    sem:description "Categoría weberiana. Distingue acción racional con arreglo a fines (instrumental) y con arreglo a valores (axiológica). Clave para entender la modernidad y sus tensiones."@es .
+
+con:Biopolitics a sem:Concept ;
+    rdfs:label "Biopolítica"@es ;
+    ped:difficulty 3 ;
+    sem:description "Concepto de Foucault: ejercicio del poder político sobre la vida biológica de las poblaciones (salud, natalidad, sexualidad). Continuado por Agamben y Butler."@es ;
+    sem:presupposes con:Discipline .
+
+con:Discipline a sem:Concept ;
+    rdfs:label "Disciplinamiento"@es ;
+    ped:difficulty 2 ;
+    sem:description "Concepto de Foucault: técnicas de control del cuerpo individual mediante vigilancia, normalización y examen. Operan en prisiones, escuelas, hospitales y fábricas."@es .
+
+con:Discourse a sem:Concept ;
+    rdfs:label "Discurso (Foucault)"@es ;
+    ped:difficulty 3 ;
+    sem:description "En Foucault: sistema de enunciados que construyen los objetos de los que hablan. El discurso no solo describe la realidad sino que la produce mediante reglas históricas."@es .
+
+con:CommunicativeAction a sem:Concept ;
+    rdfs:label "Acción comunicativa"@es ;
+    ped:difficulty 3 ;
+    sem:description "Concepto de Habermas: acción orientada al entendimiento mutuo mediante el diálogo racional. Contrapuesta a la acción instrumental. Base de su teoría democrática."@es .
+
+con:PublicSphere a sem:Concept ;
+    rdfs:label "Esfera pública"@es ;
+    ped:difficulty 2 ;
+    sem:description "Concepto de Habermas: espacio de debate racional entre ciudadanos que media entre sociedad civil y Estado. La deliberación pública legitima las normas democráticas."@es ;
+    sem:presupposes con:CommunicativeAction .
+
+con:Alienation a sem:Concept ;
+    rdfs:label "Alienación"@es ;
+    ped:difficulty 2 ;
+    sem:description "En Marx: el trabajador se desposee de su producto, su actividad y su esencia humana bajo el capitalismo. Concepto retomado por Fromm, Lukács y la Escuela de Frankfurt."@es .

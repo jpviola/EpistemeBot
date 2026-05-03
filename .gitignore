@@ -1,0 +1,13 @@
+node_modules
+.env
+.env.local
+.env*.local
+.claude
+*.db
+*.db-shm
+*.db-wal
+.next
+dist
+build
+generated
+prisma/migrations

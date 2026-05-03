@@ -1,0 +1,175 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+@prefix sem:  <https://semhum.edu/ontology/core#> .
+@prefix ped:  <https://semhum.edu/ontology/pedagogy#> .
+
+# ─────────────────────────────────────────────
+# ONTOLOGÍA: SemHum — Plataforma Semántica de
+# Educación en Humanidades y Filosofía
+# Versión: 0.1.0
+# ─────────────────────────────────────────────
+
+sem:Ontology a owl:Ontology ;
+    rdfs:label "SemHum Core Ontology"@es ;
+    rdfs:comment "Ontología base para la representación semántica de conocimiento filosófico y humanístico."@es .
+
+# ─────────────────────────────────────────────
+# CLASES PRINCIPALES
+# ─────────────────────────────────────────────
+
+sem:Philosopher a owl:Class ;
+    rdfs:label "Filósofo"@es, "Philosopher"@en ;
+    rdfs:comment "Pensador o autor filosófico."@es .
+
+sem:Concept a owl:Class ;
+    rdfs:label "Concepto"@es, "Concept"@en ;
+    rdfs:comment "Concepto filosófico central (ej: alteridad, sustancia, libertad)."@es .
+
+sem:PhilosophicalSchool a owl:Class ;
+    rdfs:label "Corriente filosófica"@es, "Philosophical School"@en ;
+    rdfs:comment "Tradición o corriente de pensamiento (ej: estoicismo, fenomenología)."@es .
+
+sem:Work a owl:Class ;
+    rdfs:label "Obra"@es, "Work"@en ;
+    rdfs:comment "Obra filosófica o texto fundacional."@es .
+
+sem:HistoricalPeriod a owl:Class ;
+    rdfs:label "Período histórico"@es, "Historical Period"@en .
+
+sem:Problem a owl:Class ;
+    rdfs:label "Problema filosófico"@es, "Philosophical Problem"@en ;
+    rdfs:comment "Problema o pregunta filosófica abierta."@es .
+
+sem:Argument a owl:Class ;
+    rdfs:label "Argumento"@es, "Argument"@en ;
+    rdfs:comment "Argumentación filosófica específica."@es .
+
+sem:Psychologist a owl:Class ;
+    rdfs:subClassOf sem:Philosopher ;
+    rdfs:label "Psicólogo / Psicoanalista"@es, "Psychologist"@en ;
+    rdfs:comment "Figura de la psicología o el psicoanálisis."@es .
+
+sem:HistoricalFigure a owl:Class ;
+    rdfs:label "Figura histórica"@es, "Historical Figure"@en ;
+    rdfs:comment "Personaje relevante de la historia política, social o cultural."@es .
+
+sem:LiteraryAuthor a owl:Class ;
+    rdfs:label "Autor literario"@es, "Literary Author"@en ;
+    rdfs:comment "Escritor, poeta o dramaturgo de relevancia humanística."@es .
+
+sem:Sociologist a owl:Class ;
+    rdfs:subClassOf sem:Philosopher ;
+    rdfs:label "Sociólogo / Cientista social"@es, "Sociologist"@en ;
+    rdfs:comment "Figura de la sociología, la antropología o las ciencias sociales."@es .
+
+sem:HistoricalEvent a owl:Class ;
+    rdfs:label "Evento histórico"@es, "Historical Event"@en ;
+    rdfs:comment "Acontecimiento histórico significativo (revolución, guerra, proceso político)."@es .
+
+# ─────────────────────────────────────────────
+# CLASES PEDAGÓGICAS
+# ─────────────────────────────────────────────
+
+ped:LearningLevel a owl:Class ;
+    rdfs:label "Nivel educativo"@es ;
+    rdfs:comment "Nivel de complejidad pedagógica: secundario, CBC, universitario, especialista."@es .
+
+ped:LearningPath a owl:Class ;
+    rdfs:label "Trayectoria de aprendizaje"@es ;
+    rdfs:comment "Secuencia de conceptos/autores para dominar un tema."@es .
+
+ped:PedagogicalQuestion a owl:Class ;
+    rdfs:label "Pregunta pedagógica"@es ;
+    rdfs:comment "Pregunta guía para orientar el aprendizaje."@es .
+
+ped:Competency a owl:Class ;
+    rdfs:label "Competencia"@es ;
+    rdfs:comment "Competencia educativa que el alumno debe desarrollar."@es .
+
+# ─────────────────────────────────────────────
+# PROPIEDADES FILOSÓFICAS
+# ─────────────────────────────────────────────
+
+sem:develops a owl:ObjectProperty ;
+    rdfs:domain sem:Philosopher ;
+    rdfs:range  sem:Concept ;
+    rdfs:label  "desarrolla concepto"@es .
+
+sem:critiques a owl:ObjectProperty ;
+    rdfs:domain sem:Philosopher ;
+    rdfs:range  sem:Philosopher ;
+    rdfs:label  "critica a"@es .
+
+sem:belongsTo a owl:ObjectProperty ;
+    rdfs:domain sem:Philosopher ;
+    rdfs:range  sem:PhilosophicalSchool ;
+    rdfs:label  "pertenece a corriente"@es .
+
+sem:influenced a owl:ObjectProperty ;
+    rdfs:domain sem:Philosopher ;
+    rdfs:range  sem:Philosopher ;
+    rdfs:label  "influyó en"@es .
+
+sem:wrotWork a owl:ObjectProperty ;
+    rdfs:domain sem:Philosopher ;
+    rdfs:range  sem:Work ;
+    rdfs:label  "escribió"@es .
+
+sem:inPeriod a owl:ObjectProperty ;
+    rdfs:domain sem:Philosopher ;
+    rdfs:range  sem:HistoricalPeriod ;
+    rdfs:label  "vivió en período"@es .
+
+sem:contrastsWith a owl:ObjectProperty ;
+    rdfs:domain sem:Concept ;
+    rdfs:range  sem:Concept ;
+    rdfs:label  "contrasta con"@es .
+
+sem:respondsTo a owl:ObjectProperty ;
+    rdfs:domain sem:Concept ;
+    rdfs:range  sem:Problem ;
+    rdfs:label  "responde al problema"@es .
+
+sem:presupposes a owl:ObjectProperty ;
+    rdfs:domain sem:Concept ;
+    rdfs:range  sem:Concept ;
+    rdfs:label  "presupone concepto"@es ;
+    rdfs:comment "Relación pedagógicamente clave: para entender A hay que entender B."@es .
+
+sem:schoolInfluenced a owl:ObjectProperty ;
+    rdfs:domain sem:PhilosophicalSchool ;
+    rdfs:range  sem:PhilosophicalSchool ;
+    rdfs:label  "corriente influyó en"@es .
+
+# ─────────────────────────────────────────────
+# PROPIEDADES PEDAGÓGICAS
+# ─────────────────────────────────────────────
+
+ped:requiredFor a owl:ObjectProperty ;
+    rdfs:domain ped:LearningPath ;
+    rdfs:range  sem:Concept ;
+    rdfs:label  "requerido para"@es .
+
+ped:difficulty a owl:DatatypeProperty ;
+    rdfs:domain sem:Concept ;
+    rdfs:range  xsd:integer ;
+    rdfs:comment "Dificultad del concepto (1=secundario, 2=CBC, 3=universitario, 4=especialista)."@es .
+
+ped:hasExplanation a owl:DatatypeProperty ;
+    rdfs:domain sem:Concept ;
+    rdfs:range  xsd:string ;
+    rdfs:label  "tiene explicación"@es .
+
+# ─────────────────────────────────────────────
+# PROPIEDADES DE DATOS
+# ─────────────────────────────────────────────
+
+sem:born  a owl:DatatypeProperty ; rdfs:domain sem:Philosopher ; rdfs:range xsd:integer .
+sem:died  a owl:DatatypeProperty ; rdfs:domain sem:Philosopher ; rdfs:range xsd:integer .
+sem:nationality a owl:DatatypeProperty ; rdfs:domain sem:Philosopher ; rdfs:range xsd:string .
+sem:description a owl:DatatypeProperty ; rdfs:range xsd:string .
+sem:altLabel a owl:DatatypeProperty ; rdfs:range xsd:string .

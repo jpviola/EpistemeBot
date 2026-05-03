@@ -1,0 +1,185 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+
+@prefix sem:  <https://semhum.edu/ontology/core#> .
+@prefix phil: <https://semhum.edu/data/philosophers/> .
+@prefix sch:  <https://semhum.edu/data/schools/> .
+@prefix per:  <https://semhum.edu/data/periods/> .
+
+# ─────────────────────────────────────────────
+# PERÍODOS HISTÓRICOS
+# ─────────────────────────────────────────────
+
+per:AncientGreece a sem:HistoricalPeriod ;
+    rdfs:label "Grecia Antigua"@es ;
+    sem:description "Período de la filosofía griega clásica, aprox. siglos VI–IV a.C."@es .
+
+per:Hellenistic a sem:HistoricalPeriod ;
+    rdfs:label "Período Helenístico"@es ;
+    sem:description "Filosofía tras Alejandro Magno, aprox. siglos III–I a.C."@es .
+
+per:LatinPatristic a sem:HistoricalPeriod ;
+    rdfs:label "Patrística"@es ;
+    sem:description "Filosofía cristiana temprana, siglos II–VIII."@es .
+
+per:HighMedieval a sem:HistoricalPeriod ;
+    rdfs:label "Escolástica"@es ;
+    sem:description "Filosofía medieval tardía, siglos XII–XIV."@es .
+
+per:Modernity a sem:HistoricalPeriod ;
+    rdfs:label "Modernidad"@es ;
+    sem:description "Filosofía moderna, siglos XVII–XVIII."@es .
+
+per:GermanIdealism a sem:HistoricalPeriod ;
+    rdfs:label "Idealismo Alemán"@es ;
+    sem:description "Kant, Fichte, Schelling, Hegel, siglos XVIII–XIX."@es .
+
+per:Ninetenth a sem:HistoricalPeriod ;
+    rdfs:label "Siglo XIX"@es .
+
+per:Continental a sem:HistoricalPeriod ;
+    rdfs:label "Filosofía Continental (s.XX)"@es .
+
+# ─────────────────────────────────────────────
+# CORRIENTES FILOSÓFICAS
+# ─────────────────────────────────────────────
+
+sch:Presocratic a sem:PhilosophicalSchool ;
+    rdfs:label "Presocráticos"@es .
+
+sch:Platonism a sem:PhilosophicalSchool ;
+    rdfs:label "Platonismo"@es .
+
+sch:Aristotelianism a sem:PhilosophicalSchool ;
+    rdfs:label "Aristotelismo"@es .
+
+sch:Stoicism a sem:PhilosophicalSchool ;
+    rdfs:label "Estoicismo"@es .
+
+sch:Neoplatonism a sem:PhilosophicalSchool ;
+    rdfs:label "Neoplatonismo"@es .
+
+sch:Scholasticism a sem:PhilosophicalSchool ;
+    rdfs:label "Escolástica"@es ;
+    sem:schoolInfluenced sch:Aristotelianism .
+
+sch:Rationalism a sem:PhilosophicalSchool ;
+    rdfs:label "Racionalismo"@es .
+
+sch:GermanIdealism a sem:PhilosophicalSchool ;
+    rdfs:label "Idealismo Alemán"@es .
+
+sch:Existentialism a sem:PhilosophicalSchool ;
+    rdfs:label "Existencialismo"@es .
+
+sch:Phenomenology a sem:PhilosophicalSchool ;
+    rdfs:label "Fenomenología"@es .
+
+sch:Deconstruction a sem:PhilosophicalSchool ;
+    rdfs:label "Postestructuralismo / Deconstrucción"@es .
+
+# ─────────────────────────────────────────────
+# FILÓSOFOS — FASE 1 (9 autores nucleares)
+# ─────────────────────────────────────────────
+
+phil:Plato a sem:Philosopher ;
+    rdfs:label "Platón"@es, "Plato"@en ;
+    sem:born -428 ;
+    sem:died -348 ;
+    sem:nationality "Griego"@es ;
+    sem:description "Discípulo de Sócrates, fundador de la Academia. Teoría de las Ideas, dualismo ontológico."@es ;
+    sem:inPeriod per:AncientGreece ;
+    sem:belongsTo sch:Platonism ;
+    sem:influenced phil:Aristotle, phil:Plotinus, phil:Augustine .
+
+phil:Aristotle a sem:Philosopher ;
+    rdfs:label "Aristóteles"@es, "Aristotle"@en ;
+    sem:born -384 ;
+    sem:died -322 ;
+    sem:nationality "Griego"@es ;
+    sem:description "Discípulo de Platón, fundador del Liceo. Metafísica, lógica, ética, política."@es ;
+    sem:inPeriod per:AncientGreece ;
+    sem:belongsTo sch:Aristotelianism ;
+    sem:critiques phil:Plato ;
+    sem:influenced phil:Aquinas .
+
+phil:Plotinus a sem:Philosopher ;
+    rdfs:label "Plotino"@es, "Plotinus"@en ;
+    sem:born 204 ;
+    sem:died 270 ;
+    sem:nationality "Romano (egipcio)"@es ;
+    sem:description "Fundador del Neoplatonismo. Sistematizó la filosofía platónica en torno al Uno."@es ;
+    sem:inPeriod per:Hellenistic ;
+    sem:belongsTo sch:Neoplatonism ;
+    sem:influenced phil:Augustine .
+
+phil:Augustine a sem:Philosopher ;
+    rdfs:label "Agustín de Hipona"@es, "Augustine of Hippo"@en ;
+    sem:born 354 ;
+    sem:died 430 ;
+    sem:nationality "Romano (africano)"@es ;
+    sem:description "Doctor de la Iglesia. Síntesis de platonismo y teología cristiana. Interioridad, gracia, tiempo."@es ;
+    sem:inPeriod per:LatinPatristic ;
+    sem:belongsTo sch:Neoplatonism ;
+    sem:influenced phil:Aquinas .
+
+phil:Aquinas a sem:Philosopher ;
+    rdfs:label "Tomás de Aquino"@es, "Thomas Aquinas"@en ;
+    sem:born 1225 ;
+    sem:died 1274 ;
+    sem:nationality "Italiano"@es ;
+    sem:description "Máximo representante de la Escolástica. Síntesis de aristotelismo y teología cristiana."@es ;
+    sem:inPeriod per:HighMedieval ;
+    sem:belongsTo sch:Scholasticism .
+
+phil:Descartes a sem:Philosopher ;
+    rdfs:label "René Descartes"@es, "René Descartes"@en ;
+    sem:born 1596 ;
+    sem:died 1650 ;
+    sem:nationality "Francés"@es ;
+    sem:description "Padre de la filosofía moderna. Duda metódica, cogito, dualismo mente-cuerpo."@es ;
+    sem:inPeriod per:Modernity ;
+    sem:belongsTo sch:Rationalism ;
+    sem:influenced phil:Kant .
+
+phil:Kant a sem:Philosopher ;
+    rdfs:label "Immanuel Kant"@es, "Immanuel Kant"@en ;
+    sem:born 1724 ;
+    sem:died 1804 ;
+    sem:nationality "Alemán"@es ;
+    sem:description "Giro copernicano epistemológico. Filosofía crítica, imperativo categórico, fenómeno/noúmeno."@es ;
+    sem:inPeriod per:GermanIdealism ;
+    sem:belongsTo sch:GermanIdealism ;
+    sem:influenced phil:Nietzsche, phil:Heidegger .
+
+phil:Nietzsche a sem:Philosopher ;
+    rdfs:label "Friedrich Nietzsche"@es, "Friedrich Nietzsche"@en ;
+    sem:born 1844 ;
+    sem:died 1900 ;
+    sem:nationality "Alemán"@es ;
+    sem:description "Crítica de la moral occidental, voluntad de poder, eterno retorno, muerte de Dios."@es ;
+    sem:inPeriod per:Ninetenth ;
+    sem:critiques phil:Plato, phil:Kant ;
+    sem:influenced phil:Heidegger .
+
+phil:Heidegger a sem:Philosopher ;
+    rdfs:label "Martin Heidegger"@es, "Martin Heidegger"@en ;
+    sem:born 1889 ;
+    sem:died 1976 ;
+    sem:nationality "Alemán"@es ;
+    sem:description "Cuestión del Ser, Dasein, existencia auténtica/inauténtica, hermenéutica, temporalidad."@es ;
+    sem:inPeriod per:Continental ;
+    sem:belongsTo sch:Phenomenology, sch:Existentialism ;
+    sem:influenced phil:Levinas .
+
+phil:Levinas a sem:Philosopher ;
+    rdfs:label "Emmanuel Levinas"@es, "Emmanuel Levinas"@en ;
+    sem:born 1906 ;
+    sem:died 1995 ;
+    sem:nationality "Lituano-Francés"@es ;
+    sem:description "Ética como filosofía primera. El Otro, alteridad, rostro, responsabilidad infinita."@es ;
+    sem:inPeriod per:Continental ;
+    sem:belongsTo sch:Phenomenology ;
+    sem:critiques phil:Heidegger .

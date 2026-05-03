@@ -1,0 +1,111 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix ped:  <https://semhum.edu/ontology/pedagogy#> .
+@prefix sem:  <https://semhum.edu/ontology/core#> .
+@prefix con:  <https://semhum.edu/data/concepts/> .
+@prefix phil: <https://semhum.edu/data/philosophers/> .
+@prefix path: <https://semhum.edu/data/paths/> .
+@prefix level: <https://semhum.edu/data/levels/> .
+
+# ─────────────────────────────────────────────
+# NIVELES PEDAGÓGICOS
+# ─────────────────────────────────────────────
+
+level:Secondary a ped:LearningLevel ;
+    rdfs:label "Secundario"@es ;
+    sem:description "Últimos años del secundario argentino (5to/6to año)."@es ;
+    ped:difficulty 1 .
+
+level:CBC a ped:LearningLevel ;
+    rdfs:label "CBC / Ingreso universitario"@es ;
+    sem:description "Ciclo Básico Común de la UBA y equivalentes."@es ;
+    ped:difficulty 2 .
+
+level:University a ped:LearningLevel ;
+    rdfs:label "1er/2do año universitario"@es ;
+    sem:description "Primeros años de filosofía, humanidades o teología."@es ;
+    ped:difficulty 3 .
+
+level:Specialist a ped:LearningLevel ;
+    rdfs:label "Especialista"@es ;
+    sem:description "Nivel avanzado: investigadores, docentes, teólogos."@es ;
+    ped:difficulty 4 .
+
+# ─────────────────────────────────────────────
+# TRAYECTORIAS DE APRENDIZAJE
+# ─────────────────────────────────────────────
+
+# Trayectoria: Para entender Alteridad (Levinas)
+path:ToUnderstandAlterity a ped:LearningPath ;
+    rdfs:label "Para entender la Alteridad de Levinas"@es ;
+    sem:description "Secuencia pedagógica necesaria para comprender el concepto de alteridad levinasiano."@es ;
+    ped:step1 con:Intentionality ;
+    ped:step2 con:Intersubjectivity ;
+    ped:step3 con:Face ;
+    ped:step4 con:Alterity ;
+    ped:targetConcept con:Alterity ;
+    ped:requiredLevel level:University .
+
+# Trayectoria: Para estudiar Nietzsche
+path:ToStudyNietzsche a ped:LearningPath ;
+    rdfs:label "Itinerario para estudiar Nietzsche"@es ;
+    sem:description "Contextos y autores previos necesarios para leer a Nietzsche con profundidad."@es ;
+    ped:step1 phil:Plato ;
+    ped:step2 phil:Aristotle ;
+    ped:step3 con:Ideas ;
+    ped:step4 con:Nihilism ;
+    ped:step5 phil:Nietzsche ;
+    ped:step6 phil:Heidegger ;
+    ped:targetPhilosopher phil:Nietzsche ;
+    ped:requiredLevel level:CBC .
+
+# Trayectoria: Para entender Heidegger
+path:ToStudyHeidegger a ped:LearningPath ;
+    rdfs:label "Itinerario para estudiar Heidegger"@es ;
+    ped:step1 con:Intentionality ;
+    ped:step2 phil:Kant ;
+    ped:step3 con:Noumenon ;
+    ped:step4 phil:Nietzsche ;
+    ped:step5 con:Being ;
+    ped:step6 con:Dasein ;
+    ped:targetPhilosopher phil:Heidegger ;
+    ped:requiredLevel level:University .
+
+# Trayectoria: Secundario → ética básica
+path:EthicsSecondary a ped:LearningPath ;
+    rdfs:label "Ética básica para el secundario"@es ;
+    ped:step1 con:Justice ;
+    ped:step2 con:Autonomy ;
+    ped:step3 con:CategoricalImperative ;
+    ped:requiredLevel level:Secondary .
+
+# ─────────────────────────────────────────────
+# REGLAS SEMÁNTICAS DE INFERENCIA PEDAGÓGICA
+# (expresadas como restricciones OWL / comentarios
+#  para implementar con SPARQL CONSTRUCT)
+# ─────────────────────────────────────────────
+
+# REGLA 1: Si un alumno no entiende concepto C,
+# y C presupposes D, entonces recomendar D primero.
+#
+# SPARQL CONSTRUCT:
+# CONSTRUCT { ?alumno ped:shouldLearnFirst ?prereq }
+# WHERE {
+#   ?alumno ped:doesNotUnderstand ?concept .
+#   ?concept sem:presupposes ?prereq .
+# }
+
+# REGLA 2: Si un alumno estudia filósofo F,
+# recomendar filósofos que F critiques o que
+# influenced F.
+#
+# SPARQL CONSTRUCT:
+# CONSTRUCT { ?alumno ped:shouldAlsoStudy ?related }
+# WHERE {
+#   ?alumno ped:isStudying ?philosopher .
+#   { ?philosopher sem:critiques ?related }
+#   UNION
+#   { ?related sem:influenced ?philosopher }
+# }

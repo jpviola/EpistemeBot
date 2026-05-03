@@ -1,0 +1,23 @@
+{
+  "name": "@semhum/api",
+  "version": "0.1.0",
+  "type": "module",
+  "exports": {
+    "./ontology/types": "./src/ontology/types.ts",
+    "./sparql/client": "./src/sparql/client.ts",
+    "./sparql/queries": "./src/sparql/queries.ts",
+    "./rag/ontology-rag": "./src/rag/ontology-rag.ts",
+    "./tutor/tutor": "./src/tutor/tutor.ts",
+    "./tutor/prompt-builder": "./src/tutor/prompt-builder.ts"
+  },
+  "scripts": {
+    "type-check": "tsc --noEmit",
+    "build": "tsc"
+  },
+  "dependencies": {
+    "@anthropic-ai/sdk": "^0.36.0"
+  },
+  "devDependencies": {
+    "typescript": "^5.4.0"
+  }
+}

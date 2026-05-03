@@ -1,0 +1,129 @@
+generator client {
+  provider = "prisma-client"
+  output   = "../generated/prisma"
+}
+
+datasource db {
+  provider = "sqlite"
+}
+
+// ── Sesión de aprendizaje ──────────────────────────
+model Session {
+  id        String    @id @default(cuid())
+  guestId   String
+  level     String
+  title     String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  messages  Message[]
+}
+
+// ── Mensaje individual ─────────────────────────────
+model Message {
+  id              String   @id @default(cuid())
+  sessionId       String
+  session         Session  @relation(fields: [sessionId], references: [id], onDelete: Cascade)
+  role            String
+  content         String
+  prerequisites   String?
+  relatedConcepts String?
+  createdAt       DateTime @default(now())
+}
+
+// ── Progreso por concepto ──────────────────────────
+model ConceptProgress {
+  id           String   @id @default(cuid())
+  guestId      String
+  conceptIri   String
+  conceptLabel String
+  seenCount    Int      @default(1)
+  lastSeenAt   DateTime @default(now())
+
+  @@unique([guestId, conceptIri])
+}
+
+// ── Usuario autenticado ────────────────────────────
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  name      String?
+  password  String
+  role      String   @default("student")
+  guestId   String?  @unique
+  interests String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+// ── Perfil de gamificación ─────────────────────────
+model GamificationProfile {
+  id                   String   @id @default(cuid())
+  guestId              String   @unique
+  nickname             String?
+  xp                   Int      @default(0)
+  level                Int      @default(1)
+  streak               Int      @default(0)
+  longestStreak        Int      @default(0)
+  lastActivityDate     String?
+  totalSessions        Int      @default(0)
+  totalMessages        Int      @default(0)
+  interestingQuestions Int      @default(0)
+  createdAt            DateTime @default(now())
+  updatedAt            DateTime @updatedAt
+
+  badges   UserBadge[]
+  xpEvents XpEvent[]
+}
+
+// ── Catálogo de badges ─────────────────────────────
+model Badge {
+  id             String @id @default(cuid())
+  key            String @unique
+  name           String
+  icon           String
+  description    String
+  xpReward       Int
+  conditionType  String
+  conditionValue Int
+
+  earnedBy UserBadge[]
+}
+
+// ── Badges ganados ─────────────────────────────────
+model UserBadge {
+  id        String   @id @default(cuid())
+  guestId   String
+  badgeId   String
+  sessionId String?
+  earnedAt  DateTime @default(now())
+
+  badge   Badge               @relation(fields: [badgeId], references: [id])
+  profile GamificationProfile @relation(fields: [guestId], references: [guestId])
+
+  @@unique([guestId, badgeId])
+}
+
+// ── Historial de XP ────────────────────────────────
+model XpEvent {
+  id        String   @id @default(cuid())
+  guestId   String
+  amount    Int
+  reason    String
+  category  String
+  sessionId String?
+  createdAt DateTime @default(now())
+
+  profile GamificationProfile @relation(fields: [guestId], references: [guestId])
+}
+
+// ── Embeddings de conceptos ontológicos ────────────
+// Almacena vectores de conceptos/filósofos para búsqueda semántica.
+// El campo embedding es un array JSON de 1024 floats (voyage-multilingual-2).
+model ConceptEmbedding {
+  id         String   @id @default(cuid())
+  conceptIri String   @unique
+  label      String
+  type       String   @default("concept")  // "concept" | "philosopher" | "figure"
+  embedding  String   // JSON: number[]
+  updatedAt  DateTime @updatedAt
+}

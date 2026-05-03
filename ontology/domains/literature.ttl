@@ -1,0 +1,126 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix sem:  <https://semhum.edu/ontology/core#> .
+@prefix ped:  <https://semhum.edu/ontology/pedagogy#> .
+@prefix fig:  <https://semhum.edu/data/figures/> .
+@prefix con:  <https://semhum.edu/data/concepts/> .
+
+# ─────────────────────────────────────────────
+# DOMINIO: Literatura y Arte
+# ─────────────────────────────────────────────
+
+# ── Escritores latinoamericanos ─────────────
+
+fig:Borges a sem:LiteraryAuthor ;
+    rdfs:label "Jorge Luis Borges"@es ;
+    sem:born 1899 ; sem:died 1986 ;
+    sem:nationality "argentino" ;
+    sem:description "Escritor argentino considerado uno de los mayores en lengua española. Sus ficciones exploran el tiempo, la identidad, los laberintos y los infinitos a través de una prosa ensayística única."@es ;
+    sem:develops con:Magical_Realism, con:Metafiction, con:Intertextuality .
+
+fig:Cortazar a sem:LiteraryAuthor ;
+    rdfs:label "Julio Cortázar"@es ;
+    sem:born 1914 ; sem:died 1984 ;
+    sem:nationality "argentino" ;
+    sem:description "Narrador argentino, figura del boom latinoamericano. Su novela Rayuela revolucionó la narrativa hispanoamericana con su estructura no lineal."@es ;
+    sem:develops con:Fantastic_Literature, con:Surrealism_Lit .
+
+fig:GarciaMarquez a sem:LiteraryAuthor ;
+    rdfs:label "Gabriel García Márquez"@es ;
+    sem:born 1927 ; sem:died 2014 ;
+    sem:nationality "colombiano" ;
+    sem:description "Narrador colombiano, Premio Nobel 1982. Máximo exponente del realismo mágico con Cien años de soledad y El amor en los tiempos del cólera."@es ;
+    sem:develops con:Magical_Realism .
+
+fig:Neruda a sem:LiteraryAuthor ;
+    rdfs:label "Pablo Neruda"@es ;
+    sem:born 1904 ; sem:died 1973 ;
+    sem:nationality "chileno" ;
+    sem:description "Poeta chileno, Premio Nobel 1971. Sus Veinte poemas de amor y una canción desesperada son de los más leídos en castellano."@es .
+
+fig:Vargas_Llosa a sem:LiteraryAuthor ;
+    rdfs:label "Mario Vargas Llosa"@es ;
+    sem:born 1936 ;
+    sem:nationality "peruano" ;
+    sem:description "Narrador peruano, Premio Nobel 2010. Figura central del boom latinoamericano junto a García Márquez."@es .
+
+# ── Escritores universales ──────────────────
+
+fig:Kafka a sem:LiteraryAuthor ;
+    rdfs:label "Franz Kafka"@es ;
+    sem:born 1883 ; sem:died 1924 ;
+    sem:nationality "checo-austríaco" ;
+    sem:description "Escritor checo en lengua alemana. Su obra explora la alienación, la burocracia y la angustia existencial. Ha dado nombre al adjetivo 'kafkiano'."@es ;
+    sem:develops con:Alienation, con:Absurdism .
+
+fig:Camus a sem:LiteraryAuthor ;
+    rdfs:label "Albert Camus"@es ;
+    sem:born 1913 ; sem:died 1960 ;
+    sem:nationality "francés-argelino" ;
+    sem:description "Escritor y filósofo. Premio Nobel 1957. En El extranjero y El mito de Sísifo desarrolla la filosofía del absurdo: la vida carece de sentido pero debe vivirse con rebeldía."@es ;
+    sem:develops con:Absurdism, con:Existentialism .
+
+fig:Dostoevsky a sem:LiteraryAuthor ;
+    rdfs:label "Fiódor Dostoievski"@es ;
+    sem:born 1821 ; sem:died 1881 ;
+    sem:nationality "ruso" ;
+    sem:description "Novelista ruso. En Crimen y castigo, Los hermanos Karamázov y El idiota explora la culpa, la libertad y la fe en profundidad psicológica sin igual."@es .
+
+fig:Shakespeare a sem:LiteraryAuthor ;
+    rdfs:label "William Shakespeare"@es ;
+    sem:born 1564 ; sem:died 1616 ;
+    sem:nationality "inglés" ;
+    sem:description "Dramaturgo y poeta inglés, considerado el más grande escritor en lengua inglesa. Autor de Hamlet, Macbeth, Otelo y Romeo y Julieta."@es .
+
+fig:Cervantes a sem:LiteraryAuthor ;
+    rdfs:label "Miguel de Cervantes"@es ;
+    sem:born 1547 ; sem:died 1616 ;
+    sem:nationality "español" ;
+    sem:description "Escritor español, autor de Don Quijote de la Mancha (1605-1615), considerada la primera novela moderna y una de las obras más importantes de la literatura universal."@es .
+
+# ── Conceptos literarios y artísticos ───────
+
+con:Magical_Realism a sem:Concept ;
+    rdfs:label "Realismo mágico"@es ;
+    ped:difficulty 2 ;
+    sem:description "Corriente literaria latinoamericana donde eventos fantásticos o sobrenaturales ocurren en contextos realistas sin ser presentados como extraordinarios. Asociado al boom latinoamericano."@es .
+
+con:Fantastic_Literature a sem:Concept ;
+    rdfs:label "Literatura fantástica"@es ;
+    ped:difficulty 1 ;
+    sem:description "Género literario en el que irrumpen elementos imposibles o sobrenaturales en un mundo reconocible. Distinto del realismo mágico en que la irrupción genera extrañeza."@es .
+
+con:Absurdism a sem:Concept ;
+    rdfs:label "Absurdismo"@es ;
+    ped:difficulty 2 ;
+    sem:description "Corriente filosófica y literaria que afirma la contradicción irresoluble entre el deseo humano de sentido y el silencio del universo. Camus lo distingue del nihilismo: el absurdo invita a la rebeldía."@es ;
+    sem:presupposes con:Existentialism .
+
+con:Metafiction a sem:Concept ;
+    rdfs:label "Metaficción"@es ;
+    ped:difficulty 3 ;
+    sem:description "Texto literario que reflexiona sobre su propia condición de ficción, poniendo en primer plano la construcción narrativa. Central en Borges y en el posmodernismo literario."@es .
+
+con:Intertextuality a sem:Concept ;
+    rdfs:label "Intertextualidad"@es ;
+    ped:difficulty 2 ;
+    sem:description "Relación entre textos: un texto incorpora, cita, alude o transforma a otros textos. Concepto de Julia Kristeva, central en la crítica literaria contemporánea."@es .
+
+con:Surrealism_Lit a sem:Concept ;
+    rdfs:label "Surrealismo"@es ;
+    ped:difficulty 2 ;
+    sem:description "Movimiento artístico y literario (1920s+) que buscó liberar el inconsciente en la obra. Influyó en Cortázar y en gran parte de la literatura latinoamericana del siglo XX."@es ;
+    sem:presupposes con:Unconscious .
+
+con:Boom_Latinoamericano a sem:Concept ;
+    rdfs:label "Boom latinoamericano"@es ;
+    ped:difficulty 1 ;
+    sem:description "Fenómeno editorial y literario de los años 60-70 en el que la narrativa latinoamericana alcanzó proyección mundial. Sus figuras centrales: García Márquez, Cortázar, Vargas Llosa, Fuentes."@es .
+
+con:Modernismo_Lit a sem:Concept ;
+    rdfs:label "Modernismo literario"@es ;
+    ped:difficulty 2 ;
+    sem:description "Primer movimiento literario propiamente latinoamericano (fines s. XIX - inicio s. XX). Valoró la renovación del lenguaje poético y la autonomía del arte. Rubén Darío como figura central."@es .

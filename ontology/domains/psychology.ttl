@@ -1,0 +1,146 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix sem:  <https://semhum.edu/ontology/core#> .
+@prefix ped:  <https://semhum.edu/ontology/pedagogy#> .
+@prefix fig:  <https://semhum.edu/data/figures/> .
+@prefix con:  <https://semhum.edu/data/concepts/> .
+
+# ─────────────────────────────────────────────
+# DOMINIO: Psicología
+# ─────────────────────────────────────────────
+
+# ── Figuras ─────────────────────────────────
+
+fig:Freud a sem:Psychologist ;
+    rdfs:label "Sigmund Freud"@es ;
+    sem:born 1856 ; sem:died 1939 ;
+    sem:nationality "austríaco" ;
+    sem:description "Fundador del psicoanálisis. Desarrolló los conceptos de inconsciente, libido, complejo de Edipo y las estructuras psíquicas (ello, yo, superyó)."@es ;
+    sem:develops con:Unconscious, con:Psychoanalysis, con:OedipusComplex, con:Superego, con:Libido ;
+    sem:influenced fig:Lacan, fig:Klein, fig:Fromm, fig:Winnicott .
+
+fig:Lacan a sem:Psychologist ;
+    rdfs:label "Jacques Lacan"@es ;
+    sem:born 1901 ; sem:died 1981 ;
+    sem:nationality "francés" ;
+    sem:description "Psicoanalista francés que releyó a Freud desde la lingüística estructural. Central en el psicoanálisis contemporáneo y en la teoría crítica latinoamericana."@es ;
+    sem:develops con:Unconscious, con:Mirror_Stage, con:Objet_Petit_A ;
+    sem:influenced fig:Freud .
+
+fig:Jung a sem:Psychologist ;
+    rdfs:label "Carl Gustav Jung"@es ;
+    sem:born 1875 ; sem:died 1961 ;
+    sem:nationality "suizo" ;
+    sem:description "Psicólogo analítico, discípulo disidente de Freud. Desarrolló los conceptos de inconsciente colectivo, arquetipos y proceso de individuación."@es ;
+    sem:develops con:Archetype, con:CollectiveUnconscious, con:Individuation ;
+    sem:influenced fig:Freud .
+
+fig:Piaget a sem:Psychologist ;
+    rdfs:label "Jean Piaget"@es ;
+    sem:born 1896 ; sem:died 1980 ;
+    sem:nationality "suizo" ;
+    sem:description "Epistemólogo y psicólogo del desarrollo. Su teoría de estadios del desarrollo cognitivo es fundamental en pedagogía."@es ;
+    sem:develops con:CognitiveDevelopment, con:Schemas, con:Assimilation ;
+    sem:influenced fig:Vygotsky .
+
+fig:Vygotsky a sem:Psychologist ;
+    rdfs:label "Lev Vygotsky"@es ;
+    sem:born 1896 ; sem:died 1934 ;
+    sem:nationality "soviético" ;
+    sem:description "Psicólogo soviético. Desarrolló la teoría sociocultural del aprendizaje: el conocimiento se construye en interacción social antes de internalizarse."@es ;
+    sem:develops con:ZPD, con:SocialLearning, con:Internalization .
+
+fig:Fromm a sem:Psychologist ;
+    rdfs:label "Erich Fromm"@es ;
+    sem:born 1900 ; sem:died 1980 ;
+    sem:nationality "alemán" ;
+    sem:description "Psicoanalista y filósofo social. Analizó el miedo a la libertad y las patologías del capitalismo moderno."@es ;
+    sem:develops con:SocialCharacter, con:Alienation ;
+    sem:influenced fig:Freud, fig:Marx .
+
+fig:Winnicott a sem:Psychologist ;
+    rdfs:label "Donald Winnicott"@es ;
+    sem:born 1896 ; sem:died 1971 ;
+    sem:nationality "británico" ;
+    sem:description "Pediatra y psicoanalista británico. Desarrolló los conceptos de objeto transicional y espacio potencial."@es ;
+    sem:develops con:TransitionalObject, con:HoldingEnvironment .
+
+fig:Klein a sem:Psychologist ;
+    rdfs:label "Melanie Klein"@es ;
+    sem:born 1882 ; sem:died 1960 ;
+    sem:nationality "austriaca" ;
+    sem:description "Psicoanalista pionera en el psicoanálisis de niños. Desarrolló la teoría de las relaciones de objeto."@es ;
+    sem:develops con:ObjectRelations, con:ProjectiveIdentification .
+
+# ── Conceptos ───────────────────────────────
+
+con:Unconscious a sem:Concept ;
+    rdfs:label "Inconsciente"@es ;
+    ped:difficulty 2 ;
+    sem:description "En Freud: parte de la psique no accesible directamente a la conciencia, sede de deseos reprimidos. En Lacan: estructurado como un lenguaje."@es ;
+    sem:presupposes con:Psyche .
+
+con:Psychoanalysis a sem:Concept ;
+    rdfs:label "Psicoanálisis"@es ;
+    ped:difficulty 2 ;
+    sem:description "Método clínico y teoría psicológica fundada por Freud. Parte del supuesto de que los conflictos inconscientes son determinantes del comportamiento."@es ;
+    sem:presupposes con:Unconscious .
+
+con:OedipusComplex a sem:Concept ;
+    rdfs:label "Complejo de Edipo"@es ;
+    ped:difficulty 2 ;
+    sem:description "Conflicto triangular entre el niño, el padre y la madre que Freud ubica como estructurante de la psique y de la cultura."@es ;
+    sem:presupposes con:Unconscious .
+
+con:Superego a sem:Concept ;
+    rdfs:label "Superyó"@es ;
+    ped:difficulty 2 ;
+    sem:description "Instancia psíquica en Freud que internaliza las normas sociales y culturales. Fuente de culpa y de ideales."@es ;
+    sem:presupposes con:OedipusComplex .
+
+con:Libido a sem:Concept ;
+    rdfs:label "Libido"@es ;
+    ped:difficulty 2 ;
+    sem:description "Energía psíquica de naturaleza sexual en la teoría freudiana. Motor de la vida pulsional."@es .
+
+con:Mirror_Stage a sem:Concept ;
+    rdfs:label "Estadio del espejo"@es ;
+    ped:difficulty 3 ;
+    sem:description "Concepto lacaniano: el sujeto se constituye al identificarse con su imagen especular, alienándose en ella. Fundamento de la identidad del yo."@es ;
+    sem:presupposes con:Unconscious .
+
+con:Objet_Petit_A a sem:Concept ;
+    rdfs:label "Objeto a (objet petit a)"@es ;
+    ped:difficulty 4 ;
+    sem:description "Concepto central de Lacan: el objeto causa del deseo, siempre esquivo, que mantiene en movimiento la dinámica del deseo."@es ;
+    sem:presupposes con:Mirror_Stage .
+
+con:Archetype a sem:Concept ;
+    rdfs:label "Arquetipo"@es ;
+    ped:difficulty 2 ;
+    sem:description "En Jung: patrones universales del inconsciente colectivo que aparecen en mitos, sueños y símbolos de todas las culturas."@es ;
+    sem:presupposes con:CollectiveUnconscious .
+
+con:CollectiveUnconscious a sem:Concept ;
+    rdfs:label "Inconsciente colectivo"@es ;
+    ped:difficulty 2 ;
+    sem:description "En Jung: capa más profunda del inconsciente, compartida por toda la humanidad, que contiene los arquetipos."@es ;
+    sem:presupposes con:Unconscious .
+
+con:ZPD a sem:Concept ;
+    rdfs:label "Zona de desarrollo próximo"@es ;
+    ped:difficulty 2 ;
+    sem:description "Concepto de Vygotsky: distancia entre lo que el estudiante puede hacer solo y lo que puede hacer con ayuda. Define el espacio para el aprendizaje mediado."@es .
+
+con:CognitiveDevelopment a sem:Concept ;
+    rdfs:label "Desarrollo cognitivo"@es ;
+    ped:difficulty 1 ;
+    sem:description "Proceso de cambio en las estructuras mentales a lo largo de la vida. Piaget identificó cuatro estadios: sensoriomotor, preoperacional, operacional concreto y formal."@es .
+
+con:Psyche a sem:Concept ;
+    rdfs:label "Psique"@es ;
+    ped:difficulty 1 ;
+    sem:description "Término griego que designa la mente o alma. En psicología: el conjunto de procesos mentales conscientes e inconscientes."@es .

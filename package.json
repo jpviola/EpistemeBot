@@ -1,0 +1,22 @@
+{
+  "name": "semhum",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Plataforma Semántica de Educación en Humanidades",
+  "workspaces": [
+    "packages/*"
+  ],
+  "scripts": {
+    "dev": "turbo dev",
+    "build": "turbo build",
+    "type-check": "turbo type-check",
+    "ontology:validate": "node scripts/validate-ontology.js"
+  },
+  "devDependencies": {
+    "turbo": "^2.0.0",
+    "typescript": "^5.4.0"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

@@ -1,0 +1,148 @@
+/* ── Tokens (mirror Landing) ── */
+:root {
+  --cream:  #FAF7F2;
+  --dark:   #1a1a2e;
+  --yellow: #FFE566;
+  --coral:  #FF6B6B;
+  --teal:   #4ECDC4;
+  --purple: #6C63FF;
+}
+
+.page {
+  min-height: 100vh;
+  display: flex; align-items: center; justify-content: center;
+  background: var(--cream);
+  padding: 24px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+}
+
+.card {
+  background: #fff;
+  border: 3px solid var(--dark);
+  border-radius: 20px;
+  padding: 40px 36px;
+  width: 100%; max-width: 440px;
+  box-shadow: 8px 8px 0 var(--dark);
+}
+
+/* Logo */
+.logo {
+  display: inline-block;
+  font-size: 20px; font-weight: 900; letter-spacing: -0.03em;
+  color: var(--dark); text-decoration: none;
+  margin-bottom: 20px;
+}
+.logoAccent {
+  display: inline-block;
+  background: var(--yellow);
+  padding: 0 4px;
+  border: 2px solid var(--dark);
+  border-radius: 4px;
+  margin-left: 1px;
+  transform: rotate(-1deg);
+}
+
+/* Title */
+.title {
+  font-size: 26px; font-weight: 900; color: var(--dark);
+  letter-spacing: -0.03em; margin: 0 0 4px;
+}
+.subtitle {
+  font-size: 13px; color: #78716c; margin: 0 0 24px;
+}
+
+/* Step dots */
+.steps { display: flex; gap: 6px; margin-bottom: 24px; }
+.stepDot {
+  height: 6px; width: 6px; border-radius: 9999px;
+  background: #e7e5e4; transition: all 0.2s;
+  border: 1.5px solid var(--dark);
+}
+.stepDotActive { background: #a8a29e; width: 18px; }
+.stepDotDone   { background: var(--dark); width: 18px; }
+
+/* Form */
+.form  { display: flex; flex-direction: column; gap: 16px; margin-top: 20px; }
+.field { display: flex; flex-direction: column; gap: 6px; font-size: 13px; font-weight: 700; color: var(--dark); }
+.teacherCodeField { margin-top: 8px; }
+
+.input {
+  border: 2.5px solid var(--dark); border-radius: 10px;
+  padding: 11px 14px; font-size: 14px; color: var(--dark);
+  background: var(--cream); outline: none;
+  transition: box-shadow 0.15s;
+  font-family: inherit;
+}
+.input:focus { box-shadow: 3px 3px 0 var(--dark); }
+.input::placeholder { color: #a8a29e; }
+
+.error {
+  font-size: 13px; font-weight: 600;
+  color: var(--coral); background: rgba(255,107,107,0.08);
+  border: 2px solid var(--coral); border-radius: 8px;
+  padding: 10px 12px;
+}
+
+/* Buttons */
+.btn {
+  padding: 13px 20px;
+  background: var(--dark); color: var(--yellow);
+  border: 2.5px solid var(--dark); border-radius: 10px;
+  font-size: 14px; font-weight: 800;
+  cursor: pointer; transition: all 0.12s; flex: 1;
+  font-family: inherit;
+}
+.btn:hover    { transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--teal); }
+.btn:disabled { opacity: 0.45; cursor: default; transform: none; box-shadow: none; }
+
+.btnBack {
+  padding: 13px 16px;
+  background: transparent; color: #78716c;
+  border: 2px solid #d6d3d1; border-radius: 10px;
+  font-size: 14px; font-weight: 600;
+  cursor: pointer; transition: all 0.12s;
+  white-space: nowrap; font-family: inherit;
+}
+.btnBack:hover { border-color: var(--dark); color: var(--dark); }
+
+.navRow { display: flex; gap: 10px; align-items: center; margin-top: 20px; }
+
+/* Role cards */
+.roleCards { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 20px; }
+.roleCard {
+  display: flex; flex-direction: column; align-items: center; gap: 6px;
+  padding: 20px 14px; border: 2.5px solid #e7e5e4; border-radius: 16px;
+  background: #fff; cursor: pointer; transition: all 0.12s; text-align: center;
+  font-family: inherit;
+}
+.roleCard:hover { border-color: var(--dark); transform: translate(-2px, -2px); box-shadow: 3px 3px 0 var(--dark); }
+.roleCardActive { border-color: var(--dark); background: var(--yellow); box-shadow: 3px 3px 0 var(--dark); }
+.roleEmoji  { font-size: 28px; }
+.roleLabel  { font-size: 14px; font-weight: 800; color: var(--dark); }
+.roleDesc   { font-size: 11px; color: #78716c; line-height: 1.4; }
+
+/* Interests grid */
+.interestGrid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 8px;
+}
+.interestChip {
+  display: flex; align-items: center; gap: 8px;
+  padding: 11px 13px; border: 2.5px solid #e7e5e4; border-radius: 12px;
+  background: #fff; cursor: pointer; text-align: left;
+  transition: all 0.12s; font-family: inherit;
+}
+.interestChip:hover { border-color: var(--dark); }
+.interestChipActive { border-color: var(--dark); background: var(--teal); box-shadow: 2px 2px 0 var(--dark); }
+.interestEmoji { font-size: 18px; flex-shrink: 0; }
+.interestLabel { font-size: 13px; font-weight: 600; color: var(--dark); }
+
+/* Footer links */
+.switch {
+  text-align: center; font-size: 13px; color: #78716c; margin-top: 20px;
+}
+.switch a {
+  color: var(--dark); font-weight: 700; text-decoration: none;
+  border-bottom: 2px solid var(--yellow);
+}
+.switch a:hover { background: var(--yellow); }
+.note { text-align: center; font-size: 11px; color: #a8a29e; margin-top: 12px; line-height: 1.5; }

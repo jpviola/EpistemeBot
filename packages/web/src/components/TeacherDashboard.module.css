@@ -1,0 +1,158 @@
+/* ── Tokens ── */
+:root {
+  --cream:  #FAF7F2;
+  --dark:   #1a1a2e;
+  --yellow: #FFE566;
+  --coral:  #FF6B6B;
+  --teal:   #4ECDC4;
+  --purple: #6C63FF;
+}
+
+.page {
+  max-width: 1040px; margin: 0 auto;
+  padding: 32px 24px 64px;
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  background: var(--cream); min-height: 100vh;
+}
+.loading {
+  text-align: center; color: #a8a29e;
+  padding: 80px; font-size: 14px;
+}
+.empty { font-size: 13px; color: #a8a29e; padding: 16px 0; }
+
+/* Header */
+.header {
+  display: flex; justify-content: space-between; align-items: flex-start;
+  margin-bottom: 32px; flex-wrap: wrap; gap: 16px;
+}
+.headerRight { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+
+.logo {
+  display: inline-block;
+  font-size: 20px; font-weight: 900; letter-spacing: -0.03em;
+  color: var(--dark); text-decoration: none; margin-bottom: 6px;
+}
+.logoAccent {
+  display: inline-block; background: var(--yellow);
+  padding: 0 4px; border: 2px solid var(--dark);
+  border-radius: 4px; margin-left: 1px; transform: rotate(-1deg);
+}
+.title { font-size: 28px; font-weight: 900; color: var(--dark); letter-spacing: -0.03em; margin: 0; }
+.sub   { font-size: 13px; color: #78716c; margin: 4px 0 0; }
+
+.logoutBtn {
+  font-size: 12px; font-weight: 700; color: var(--dark);
+  background: #fff; border: 2.5px solid var(--dark); border-radius: 8px;
+  padding: 8px 16px; cursor: pointer; transition: all 0.12s;
+  font-family: inherit;
+}
+.logoutBtn:hover { background: var(--coral); color: #fff; border-color: var(--coral); }
+
+/* Tabs */
+.tabs {
+  display: flex; gap: 3px; background: #fff;
+  border: 2.5px solid var(--dark); border-radius: 10px; padding: 3px;
+}
+.tabBtn {
+  padding: 7px 18px; border-radius: 7px;
+  font-size: 12px; font-weight: 700; color: #78716c;
+  cursor: pointer; border: none; background: transparent;
+  transition: all 0.12s; font-family: inherit;
+}
+.tabBtn:hover { color: var(--dark); }
+.tabActive    { background: var(--dark); color: var(--yellow); }
+
+/* KPIs */
+.kpis {
+  display: grid; grid-template-columns: repeat(4, 1fr);
+  gap: 0; margin-bottom: 24px;
+  border: 3px solid var(--dark); border-radius: 16px; overflow: hidden;
+  box-shadow: 6px 6px 0 var(--dark);
+}
+.kpi {
+  padding: 20px 16px; text-align: center;
+  border-right: 2.5px solid var(--dark);
+}
+.kpi:last-child { border-right: none; }
+.kpi:nth-child(1) { background: var(--yellow); }
+.kpi:nth-child(2) { background: var(--teal); }
+.kpi:nth-child(3) { background: var(--coral); color: #fff; }
+.kpi:nth-child(4) { background: var(--purple); color: #fff; }
+.kpiVal { display: block; font-size: 32px; font-weight: 900; letter-spacing: -0.03em; }
+.kpiLbl { display: block; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em; margin-top: 4px; opacity: 0.75; }
+
+/* Grid panels */
+.grid     { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+.panel    {
+  background: #fff; border: 2.5px solid var(--dark);
+  border-radius: 16px; padding: 22px;
+  box-shadow: 4px 4px 0 var(--dark);
+}
+.panelFull { grid-column: 1 / -1; }
+.panelTitle {
+  font-size: 11px; font-weight: 800; text-transform: uppercase;
+  letter-spacing: 0.08em; color: #a8a29e; margin-bottom: 16px;
+}
+
+/* Interest distribution */
+.interestRow { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 2px solid var(--cream); }
+.interestRow:last-child { border-bottom: none; }
+.interestEmoji    { font-size: 15px; flex-shrink: 0; }
+.interestBarWrap  { flex: 1; }
+.interestLabel    { font-size: 12px; font-weight: 600; color: var(--dark); margin-bottom: 3px; }
+.interestBarBg    { height: 6px; background: var(--cream); border-radius: 9999px; overflow: hidden; border: 1.5px solid #e7e5e4; }
+.interestBarFill  { height: 100%; background: var(--dark); border-radius: 9999px; transition: width 0.5s ease; }
+.interestCount    { font-size: 12px; font-weight: 700; color: var(--dark); min-width: 20px; text-align: right; }
+
+/* Concepts */
+.conceptRow { display: flex; align-items: center; gap: 10px; padding: 7px 0; border-bottom: 2px solid var(--cream); }
+.conceptRow:last-child { border-bottom: none; }
+.conceptPos   { font-size: 11px; font-weight: 700; color: #a8a29e; min-width: 24px; }
+.conceptLabel { font-size: 13px; font-weight: 500; color: var(--dark); flex: 1; }
+.conceptCount { font-size: 12px; font-weight: 600; color: #78716c; }
+
+/* Leaderboard */
+.studentRow { display: flex; align-items: center; gap: 8px; padding: 7px 0; border-bottom: 2px solid var(--cream); }
+.studentRow:last-child { border-bottom: none; }
+.studentPos    { font-size: 11px; font-weight: 700; color: #a8a29e; min-width: 24px; }
+.studentEmoji  { font-size: 15px; }
+.studentName   { font-size: 13px; font-weight: 500; color: var(--dark); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.studentXp     { font-size: 12px; font-weight: 700; color: #059669; }
+.studentStreak { font-size: 12px; color: var(--coral); min-width: 36px; text-align: right; }
+
+/* Recent sessions */
+.sessionTable { display: flex; flex-direction: column; gap: 4px; }
+.sessionRow   {
+  display: flex; align-items: center; gap: 12px;
+  padding: 10px 14px; background: var(--cream);
+  border: 2px solid #e7e5e4; border-radius: 10px;
+}
+.sessTitle { font-size: 13px; font-weight: 500; color: var(--dark); flex: 1; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.sessLevel {
+  font-size: 11px; font-weight: 700; color: var(--dark);
+  background: var(--yellow); border: 1.5px solid var(--dark);
+  border-radius: 9999px; padding: 2px 9px;
+}
+.sessMsg   { font-size: 11px; color: #a8a29e; min-width: 52px; text-align: right; }
+.sessDate  { font-size: 11px; color: #a8a29e; min-width: 110px; text-align: right; }
+
+/* Student list tab */
+.studentTable { display: flex; flex-direction: column; gap: 10px; }
+.studentCard  {
+  padding: 16px 18px;
+  border: 2.5px solid #e7e5e4; border-radius: 14px;
+  background: var(--cream); transition: all 0.12s;
+}
+.studentCard:hover { border-color: var(--dark); box-shadow: 3px 3px 0 var(--dark); }
+.studentCardTop     { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 10px; }
+.studentCardName    { font-size: 14px; font-weight: 800; color: var(--dark); }
+.studentCardEmail   { font-size: 12px; color: #78716c; flex: 1; }
+.studentCardDate    { font-size: 11px; color: #a8a29e; }
+.studentCardInterests { display: flex; flex-wrap: wrap; gap: 6px; }
+.studentCardNoInterests { font-size: 12px; color: #c0bbb7; margin: 0; }
+.interestChip {
+  font-size: 11px; font-weight: 700;
+  background: var(--teal); color: var(--dark);
+  border: 2px solid var(--dark); border-radius: 9999px;
+  padding: 3px 10px; box-shadow: 1.5px 1.5px 0 var(--dark);
+}

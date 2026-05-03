@@ -1,0 +1,170 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl:  <http://www.w3.org/2002/07/owl#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix sem:  <https://semhum.edu/ontology/core#> .
+@prefix ped:  <https://semhum.edu/ontology/pedagogy#> .
+@prefix fig:  <https://semhum.edu/data/figures/> .
+@prefix evt:  <https://semhum.edu/data/events/> .
+@prefix con:  <https://semhum.edu/data/concepts/> .
+
+# ─────────────────────────────────────────────
+# DOMINIO: Historia
+# ─────────────────────────────────────────────
+
+# ── Figuras históricas argentinas ───────────
+
+fig:SanMartin a sem:HistoricalFigure ;
+    rdfs:label "José de San Martín"@es ;
+    sem:born 1778 ; sem:died 1850 ;
+    sem:nationality "argentino" ;
+    sem:description "General y prócer de la independencia sudamericana. Libertador de Argentina, Chile y Perú. Figura central del proceso emancipatorio americano."@es .
+
+fig:Rosas a sem:HistoricalFigure ;
+    rdfs:label "Juan Manuel de Rosas"@es ;
+    sem:born 1793 ; sem:died 1877 ;
+    sem:nationality "argentino" ;
+    sem:description "Gobernador de Buenos Aires y figura central de la etapa rosista. Debate historiográfico permanente: para algunos, tirano federal; para otros, defensor de la soberanía nacional."@es .
+
+fig:Sarmiento a sem:HistoricalFigure ;
+    rdfs:label "Domingo Faustino Sarmiento"@es ;
+    sem:born 1811 ; sem:died 1888 ;
+    sem:nationality "argentino" ;
+    sem:description "Escritor, político y presidente argentino. Autor del Facundo. Representante del liberalismo unitario y promotor de la educación pública."@es .
+
+fig:Peron a sem:HistoricalFigure ;
+    rdfs:label "Juan Domingo Perón"@es ;
+    sem:born 1895 ; sem:died 1974 ;
+    sem:nationality "argentino" ;
+    sem:description "Militar y político argentino. Tres veces presidente. Fundador del peronismo/justicialismo, movimiento que reconfiguró la política argentina del siglo XX."@es .
+
+fig:Evita a sem:HistoricalFigure ;
+    rdfs:label "Eva Perón"@es ;
+    sem:born 1919 ; sem:died 1952 ;
+    sem:nationality "argentina" ;
+    sem:description "Actriz y política argentina, esposa de Juan Perón. Impulsora de los derechos de la mujer (voto femenino 1951) y del Estado de bienestar peronista."@es .
+
+# ── Figuras históricas latinoamericanas ─────
+
+fig:Bolivar a sem:HistoricalFigure ;
+    rdfs:label "Simón Bolívar"@es ;
+    sem:born 1783 ; sem:died 1830 ;
+    sem:nationality "venezolano" ;
+    sem:description "Libertador de Venezuela, Colombia, Ecuador, Perú y Bolivia. Principal figura de la independencia latinoamericana, con proyecto de unión continental."@es .
+
+fig:Guevara a sem:HistoricalFigure ;
+    rdfs:label "Ernesto 'Che' Guevara"@es ;
+    sem:born 1928 ; sem:died 1967 ;
+    sem:nationality "argentino" ;
+    sem:description "Médico, político y revolucionario argentino. Figura central de la Revolución Cubana y símbolo global de la lucha guerrillera contra el imperialismo."@es .
+
+fig:Marti a sem:HistoricalFigure ;
+    rdfs:label "José Martí"@es ;
+    sem:born 1853 ; sem:died 1895 ;
+    sem:nationality "cubano" ;
+    sem:description "Poeta, escritor y líder independentista cubano. Precursor del modernismo literario y del antiimperialismo latinoamericano."@es .
+
+# ── Figuras históricas universales ──────────
+
+fig:Napoleon a sem:HistoricalFigure ;
+    rdfs:label "Napoleón Bonaparte"@es ;
+    sem:born 1769 ; sem:died 1821 ;
+    sem:nationality "francés" ;
+    sem:description "General y emperador francés. Consolidó y exportó los principios de la Revolución Francesa a través de sus conquistas militares en Europa."@es .
+
+fig:Robespierre a sem:HistoricalFigure ;
+    rdfs:label "Maximilien Robespierre"@es ;
+    sem:born 1758 ; sem:died 1794 ;
+    sem:nationality "francés" ;
+    sem:description "Político jacobino y figura central del Terror revolucionario. Encarna el debate sobre los límites de la virtud republicana y la violencia política."@es .
+
+# ── Eventos históricos argentinos ───────────
+
+evt:MayRevolution a sem:HistoricalEvent ;
+    rdfs:label "Revolución de Mayo"@es ;
+    sem:description "Proceso político del 18 al 25 de mayo de 1810 en Buenos Aires que destituyó al virrey Cisneros y formó la Primera Junta de Gobierno. Inicio del proceso de independencia argentina."@es ;
+    ped:difficulty 1 .
+
+evt:ArgentineIndependence a sem:HistoricalEvent ;
+    rdfs:label "Independencia Argentina"@es ;
+    sem:description "Declaración del 9 de julio de 1816 en el Congreso de Tucumán. Las Provincias Unidas del Río de la Plata se declaran independientes del Imperio español."@es ;
+    ped:difficulty 1 .
+
+evt:Peronism a sem:HistoricalEvent ;
+    rdfs:label "Primer peronismo (1946-1955)"@es ;
+    sem:description "Período presidencial de Juan Perón caracterizado por industrialización, derechos laborales, sufragio femenino y políticas de bienestar social. Derrocado por el golpe de 1955 (Revolución Libertadora)."@es ;
+    ped:difficulty 2 .
+
+evt:ArgentineDictatorship a sem:HistoricalEvent ;
+    rdfs:label "Dictadura cívico-militar argentina (1976-1983)"@es ;
+    sem:description "Régimen de facto iniciado el 24 de marzo de 1976 con el golpe de Estado que derrocó a Isabel Perón. Se calcula en 30.000 los desaparecidos. Finaliza con la transición democrática de 1983."@es ;
+    ped:difficulty 2 .
+
+# ── Eventos históricos latinoamericanos ─────
+
+evt:CubanRevolution a sem:HistoricalEvent ;
+    rdfs:label "Revolución Cubana"@es ;
+    sem:description "Proceso revolucionario liderado por Fidel Castro y el Che Guevara que derrocó a Batista en 1959. Instauró el primer gobierno socialista de América Latina."@es ;
+    ped:difficulty 2 .
+
+# ── Eventos históricos universales ──────────
+
+evt:FrenchRevolution a sem:HistoricalEvent ;
+    rdfs:label "Revolución Francesa"@es ;
+    sem:description "Proceso político y social (1789-1799) que abolió el Antiguo Régimen en Francia. Consagró los principios de libertad, igualdad y fraternidad, e influyó en todas las revoluciones posteriores."@es ;
+    ped:difficulty 1 ;
+    sem:presupposes con:Enlightenment .
+
+evt:WWI a sem:HistoricalEvent ;
+    rdfs:label "Primera Guerra Mundial"@es ;
+    sem:description "Conflicto armado global (1914-1918). Desintegró los imperios Otomano, Austro-Húngaro y Ruso. Reconfiguró el mapa europeo y sentó condiciones para la Segunda Guerra."@es ;
+    ped:difficulty 2 .
+
+evt:WWII a sem:HistoricalEvent ;
+    rdfs:label "Segunda Guerra Mundial"@es ;
+    sem:description "Conflicto global (1939-1945). Enfrentó a los Aliados con las potencias del Eje. Culminó con el Holocausto y el nacimiento de la bipolaridad de la Guerra Fría."@es ;
+    ped:difficulty 2 .
+
+evt:Holocaust a sem:HistoricalEvent ;
+    rdfs:label "Holocausto / Shoá"@es ;
+    sem:description "Genocidio sistemático perpetrado por el régimen nazi en el que fueron asesinados seis millones de judíos y millones de personas de otros grupos. Evento fundacional de la reflexión ética contemporánea sobre el Mal."@es ;
+    ped:difficulty 2 .
+
+evt:ColdWar a sem:HistoricalEvent ;
+    rdfs:label "Guerra Fría"@es ;
+    sem:description "Conflicto geopolítico (1947-1991) entre EEUU y la URSS que organizó la política mundial en dos bloques. Incidió directamente en las dictaduras latinoamericanas."@es ;
+    ped:difficulty 2 .
+
+evt:Colonialism a sem:HistoricalEvent ;
+    rdfs:label "Colonialismo europeo en América"@es ;
+    sem:description "Proceso de conquista y dominio colonial iniciado en 1492 que reestructuró las sociedades americanas mediante la violencia, el mestizaje y la imposición cultural. Base del debate sobre colonialidad del poder."@es ;
+    ped:difficulty 1 .
+
+# ── Conceptos históricos ────────────────────
+
+con:Enlightenment a sem:Concept ;
+    rdfs:label "Ilustración"@es ;
+    ped:difficulty 2 ;
+    sem:description "Movimiento intelectual europeo del siglo XVIII que colocó la razón, la ciencia y la autonomía del sujeto como fundamentos del progreso humano. Base ideológica de las revoluciones democráticas."@es .
+
+con:Nationalism a sem:Concept ;
+    rdfs:label "Nacionalismo"@es ;
+    ped:difficulty 1 ;
+    sem:description "Ideología y movimiento político que afirma que los pueblos con identidad cultural común tienen derecho a la autodeterminación y al Estado propio."@es .
+
+con:Imperialism a sem:Concept ;
+    rdfs:label "Imperialismo"@es ;
+    ped:difficulty 2 ;
+    sem:description "Política de extensión del poder de un Estado sobre otros territorios por medios económicos, políticos o militares. Concepto clave en la historia latinoamericana."@es .
+
+con:Colonialism_Concept a sem:Concept ;
+    rdfs:label "Colonialismo"@es ;
+    ped:difficulty 1 ;
+    sem:description "Sistema de dominio político y económico de un territorio por parte de una potencia extranjera. En América Latina, base del debate sobre dependencia y colonialidad."@es .
+
+con:ColonialityOfPower a sem:Concept ;
+    rdfs:label "Colonialidad del poder"@es ;
+    ped:difficulty 3 ;
+    sem:description "Concepto de Aníbal Quijano: las estructuras de poder creadas por el colonialismo persisten más allá de la independencia formal, en la clasificación racial y la división del trabajo."@es ;
+    sem:presupposes con:Colonialism_Concept .

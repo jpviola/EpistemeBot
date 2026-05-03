@@ -1,0 +1,205 @@
+@prefix rdf:  <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix xsd:  <http://www.w3.org/2001/XMLSchema#> .
+
+@prefix sem:  <https://semhum.edu/ontology/core#> .
+@prefix ped:  <https://semhum.edu/ontology/pedagogy#> .
+@prefix con:  <https://semhum.edu/data/concepts/> .
+@prefix pro:  <https://semhum.edu/data/problems/> .
+@prefix phil: <https://semhum.edu/data/philosophers/> .
+
+# ─────────────────────────────────────────────
+# PROBLEMAS FILOSÓFICOS FUNDAMENTALES
+# ─────────────────────────────────────────────
+
+pro:BeingProblem a sem:Problem ;
+    rdfs:label "Problema del Ser"@es ;
+    sem:description "¿Qué es el ser? ¿Por qué hay algo en vez de nada?"@es .
+
+pro:KnowledgeProblem a sem:Problem ;
+    rdfs:label "Problema del conocimiento"@es ;
+    sem:description "¿Cómo conocemos? ¿Cuáles son los límites del conocimiento?"@es .
+
+pro:EthicsProblem a sem:Problem ;
+    rdfs:label "Problema ético"@es ;
+    sem:description "¿Qué debemos hacer? ¿Qué es el bien?"@es .
+
+pro:OthernessProblem a sem:Problem ;
+    rdfs:label "Problema de la alteridad"@es ;
+    sem:description "¿Cómo me relaciono con el Otro? ¿Qué lo hace irreductible?"@es .
+
+pro:FreedomProblem a sem:Problem ;
+    rdfs:label "Problema de la libertad"@es ;
+    sem:description "¿Somos libres? ¿Qué significa la libertad?"@es .
+
+# ─────────────────────────────────────────────
+# CONCEPTOS FILOSÓFICOS
+# ─────────────────────────────────────────────
+
+# ── Metafísica y Ontología ───────────────────
+
+con:Being a sem:Concept ;
+    rdfs:label "Ser"@es, "Being"@en ;
+    sem:description "Categoría fundamental de la metafísica: lo que es, en cuanto es."@es ;
+    ped:difficulty 3 ;
+    sem:respondsTo pro:BeingProblem ;
+    sem:presupposes con:Existence .
+
+con:Existence a sem:Concept ;
+    rdfs:label "Existencia"@es, "Existence"@en ;
+    sem:description "El hecho de que algo sea. Distinto de la esencia en la escolástica."@es ;
+    ped:difficulty 2 .
+
+con:Essence a sem:Concept ;
+    rdfs:label "Esencia"@es, "Essence"@en ;
+    sem:description "Lo que algo es: su definición, su quididad."@es ;
+    ped:difficulty 2 ;
+    sem:contrastsWith con:Existence .
+
+con:Substance a sem:Concept ;
+    rdfs:label "Sustancia"@es, "Substance"@en ;
+    sem:description "En Aristóteles: lo que existe en sí y por sí. Sujeto de predicación."@es ;
+    ped:difficulty 2 .
+
+con:Ideas a sem:Concept ;
+    rdfs:label "Ideas (Platón)"@es, "Platonic Forms"@en ;
+    sem:altLabel "Formas platónicas"@es ;
+    sem:description "Entidades eternas e inmutables que son el modelo del mundo sensible."@es ;
+    ped:difficulty 2 ;
+    sem:presupposes con:Dualismo .
+
+con:Dualismo a sem:Concept ;
+    rdfs:label "Dualismo"@es, "Dualism"@en ;
+    sem:description "Distinción ontológica entre dos órdenes de realidad: inteligible/sensible, mente/cuerpo."@es ;
+    ped:difficulty 1 .
+
+con:Dasein a sem:Concept ;
+    rdfs:label "Dasein"@es, "Dasein"@en ;
+    sem:altLabel "Ser-ahí, ser-en-el-mundo"@es ;
+    sem:description "En Heidegger: el ente que tiene la cuestión del ser como su propio ser."@es ;
+    ped:difficulty 3 ;
+    sem:presupposes con:Being, con:Temporality .
+
+con:Temporality a sem:Concept ;
+    rdfs:label "Temporalidad"@es, "Temporality"@en ;
+    sem:description "El carácter temporal del Dasein; horizonte de comprensión del ser."@es ;
+    ped:difficulty 3 .
+
+# ── Epistemología ───────────────────────────
+
+con:Cogito a sem:Concept ;
+    rdfs:label "Cogito ergo sum"@es ;
+    sem:altLabel "Pienso luego existo"@es ;
+    sem:description "Punto de certeza indudable de Descartes: el pensar que piensa."@es ;
+    ped:difficulty 1 ;
+    sem:presupposes con:MethologicalDoubt ;
+    sem:respondsTo pro:KnowledgeProblem .
+
+con:MethologicalDoubt a sem:Concept ;
+    rdfs:label "Duda metódica"@es ;
+    sem:description "Procedimiento cartesiano: dudar de todo para hallar una verdad indudable."@es ;
+    ped:difficulty 1 .
+
+con:Phenomenon a sem:Concept ;
+    rdfs:label "Fenómeno"@es, "Phenomenon"@en ;
+    sem:description "En Kant: aquello que aparece a la conciencia; objeto de la experiencia posible."@es ;
+    ped:difficulty 2 ;
+    sem:contrastsWith con:Noumenon .
+
+con:Noumenon a sem:Concept ;
+    rdfs:label "Noúmeno"@es, "Noumenon"@en ;
+    sem:altLabel "Cosa en sí"@es ;
+    sem:description "En Kant: la cosa tal como es en sí misma, incognoscible."@es ;
+    ped:difficulty 3 .
+
+# ── Ética ───────────────────────────────────
+
+con:Justice a sem:Concept ;
+    rdfs:label "Justicia"@es, "Justice"@en ;
+    sem:description "Virtud fundamental en Platón y Aristóteles; principio de ordenación social."@es ;
+    ped:difficulty 1 ;
+    sem:respondsTo pro:EthicsProblem .
+
+con:CategoricalImperative a sem:Concept ;
+    rdfs:label "Imperativo categórico"@es, "Categorical Imperative"@en ;
+    sem:description "Principio ético kantiano: actúa solo según aquella máxima que puedas querer ley universal."@es ;
+    ped:difficulty 2 ;
+    sem:respondsTo pro:EthicsProblem ;
+    sem:presupposes con:Autonomy .
+
+con:Autonomy a sem:Concept ;
+    rdfs:label "Autonomía"@es, "Autonomy"@en ;
+    sem:description "Capacidad de darse a uno mismo la ley moral. Central en la ética kantiana."@es ;
+    ped:difficulty 2 ;
+    sem:contrastsWith con:Heteronomy .
+
+con:Heteronomy a sem:Concept ;
+    rdfs:label "Heteronomía"@es, "Heteronomy"@en ;
+    sem:description "Recibir la ley desde fuera; opuesto a la autonomía moral."@es ;
+    ped:difficulty 2 .
+
+# ── Fenomenología y Alteridad ────────────────
+
+con:Alterity a sem:Concept ;
+    rdfs:label "Alteridad"@es, "Alterity"@en ;
+    sem:altLabel "Otredad"@es ;
+    sem:description "La condición del Otro como radicalmente distinto, irreductible al Mismo."@es ;
+    ped:difficulty 3 ;
+    sem:presupposes con:Intersubjectivity, con:Face ;
+    sem:respondsTo pro:OthernessProblem .
+
+con:Intersubjectivity a sem:Concept ;
+    rdfs:label "Intersubjetividad"@es, "Intersubjectivity"@en ;
+    sem:description "Relación entre sujetos como constitutiva de la experiencia y el sentido."@es ;
+    ped:difficulty 2 ;
+    sem:presupposes con:Intentionality .
+
+con:Intentionality a sem:Concept ;
+    rdfs:label "Intencionalidad"@es, "Intentionality"@en ;
+    sem:description "En Husserl: la conciencia siempre es conciencia de algo. Estructura fundamental."@es ;
+    ped:difficulty 2 .
+
+con:Face a sem:Concept ;
+    rdfs:label "Rostro (Levinas)"@es, "Face"@en ;
+    sem:altLabel "Le visage"@es ;
+    sem:description "En Levinas: el rostro del Otro que me interpela éticamente, me ordena 'no matarás'."@es ;
+    ped:difficulty 3 ;
+    sem:presupposes con:Alterity .
+
+# ── Filosofía Nietzscheana ───────────────────
+
+con:WillToPower a sem:Concept ;
+    rdfs:label "Voluntad de poder"@es, "Will to Power"@en ;
+    sem:description "En Nietzsche: fuerza creadora y expansiva fundamental de la vida."@es ;
+    ped:difficulty 2 ;
+    sem:presupposes con:Nihilism .
+
+con:Nihilism a sem:Concept ;
+    rdfs:label "Nihilismo"@es, "Nihilism"@en ;
+    sem:description "Crisis de los valores superiores en Occidente; consecuencia de la muerte de Dios."@es ;
+    ped:difficulty 2 .
+
+con:EternalReturn a sem:Concept ;
+    rdfs:label "Eterno retorno"@es, "Eternal Return"@en ;
+    sem:description "Pensamiento de Nietzsche: ¿qué si todo retornase infinitamente? Prueba máxima del amor fati."@es ;
+    ped:difficulty 3 ;
+    sem:presupposes con:WillToPower .
+
+con:Overman a sem:Concept ;
+    rdfs:label "Superhombre"@es, "Übermensch"@en ;
+    sem:altLabel "Übermensch"@es ;
+    sem:description "El que crea nuevos valores tras la muerte de Dios. Superación del hombre actual."@es ;
+    ped:difficulty 2 ;
+    sem:presupposes con:Nihilism, con:WillToPower .
+
+# ─────────────────────────────────────────────
+# RELACIONES FILÓSOFO → CONCEPTO
+# ─────────────────────────────────────────────
+
+phil:Plato       sem:develops con:Ideas, con:Justice .
+phil:Aristotle   sem:develops con:Substance .
+phil:Descartes   sem:develops con:Cogito, con:MethologicalDoubt, con:Dualismo .
+phil:Kant        sem:develops con:CategoricalImperative, con:Autonomy, con:Phenomenon, con:Noumenon .
+phil:Nietzsche   sem:develops con:Nihilism, con:WillToPower, con:EternalReturn, con:Overman .
+phil:Heidegger   sem:develops con:Dasein, con:Being, con:Temporality .
+phil:Levinas     sem:develops con:Alterity, con:Face .
