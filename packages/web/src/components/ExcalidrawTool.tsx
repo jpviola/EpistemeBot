@@ -1,10 +1,10 @@
 "use client";
 
 import dynamic from "next/dynamic";
-import { useRef, useState } from "react";
+import { useRef, useState, forwardRef } from "react";
 
 // Dynamic import to avoid SSR problems
-const Excalidraw = dynamic(() => import("@excalidraw/excalidraw"), { ssr: false });
+const Excalidraw = dynamic(() => import("@excalidraw/excalidraw").then(mod => mod.Excalidraw), { ssr: false });
 
 type Props = {
   onSave?: () => void;
@@ -99,6 +99,7 @@ export default function ExcalidrawTool({ onSave, sessionId, guestId }: Props) {
         <span style={{ color: "#666" }}>{message}</span>
       </div>
       <div style={{ flex: 1 }}>
+        {/* @ts-ignore */}
         <Excalidraw ref={excalidrawRef} />
       </div>
     </div>

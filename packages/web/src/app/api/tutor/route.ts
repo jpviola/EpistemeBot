@@ -16,6 +16,7 @@ import {
   trackConceptProgress,
 } from "@/lib/sessions";
 import { rewardExchange } from "@/lib/gamification";
+import { getRecommendations } from "@/lib/recommendations";
 
 const anthropic = new Anthropic();
 const sparql    = SparqlClient.createInMemory();
@@ -99,11 +100,19 @@ export async function POST(req: NextRequest) {
         // 5. Persistir respuesta del asistente
         await saveMessage(sessionId, "assistant", fullResponse, { prerequisites, relatedConcepts });
 
-        // 6. Gamificación (fire-and-forget, no bloquea la respuesta)
-        rewardExchange(guestId, sessionId, question, isFirst).then(result => {
-          // El XP ganado ya fue persistido; el cliente puede consultarlo via /api/gamification/profile
-          void result;
-        }).catch(() => {});
+        // 6. Gamificación y recomendaciones
+        const xpResult = await rewardExchange(guestId, sessionId, question, isFirst);
+        const xpGained = xpResult.total;
+
+        let recommendations: any[] = [];
+        if (mode === "tutor") {
+          const entities = relatedConcepts
+            .filter(r => r.iri)
+            .map(r => ({ iri: r.iri!, label: r.label, type: "concept" }));
+          recommendations = await getRecommendations({ question, guestId, relatedEntities: entities });
+        }
+
+        send({ recommendations, xpGained });
 
         controller.enqueue(encoder.encode("data: [DONE]\n\n"));
       } catch (err) {

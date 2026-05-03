@@ -34,5 +34,4 @@ export async function GET(req: NextRequest) {
   });
 
   return Response.json(attachments);
-}</content>
-<parameter name="filePath">c:\Users\juan_\OneDrive\Escritorio\Plataforma semántica de educación\packages\web\src\app\api\excalidraw\attachments\route.ts
+}

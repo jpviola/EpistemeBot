@@ -58,7 +58,8 @@ export function useTutorStream() {
             if (parsed.text) {
               options.onText(parsed.text);
             }
-            if (parsed.prerequisites !== undefined || parsed.relatedConcepts !== undefined) {
+            if (parsed.prerequisites !== undefined || parsed.relatedConcepts !== undefined ||
+                parsed.recommendations !== undefined || parsed.xpGained !== undefined) {
               metadata = { ...metadata, ...parsed };
               options.onMetadata(metadata);
             }

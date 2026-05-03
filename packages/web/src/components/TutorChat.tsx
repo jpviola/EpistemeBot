@@ -182,29 +182,6 @@ export function TutorChat() {
     setMessages(msgs);
   }
 
-  async function fetchRecommendations(
-    question: string,
-    relatedConcepts: Array<{ label: string; relation: string; iri?: string }>,
-    msgIndex: number,
-  ) {
-    const entities = relatedConcepts
-      .filter(r => r.iri)
-      .map(r => ({ iri: r.iri!, label: r.label, type: "concept" }));
-    const params = new URLSearchParams({ question, guestId });
-    if (entities.length) params.set("entities", encodeURIComponent(JSON.stringify(entities)));
-    try {
-      const res = await fetch(`/api/recommendations?${params}`);
-      if (!res.ok) return;
-      const recs: Recommendation[] = await res.json();
-      if (recs.length === 0) return;
-      setMessages(prev => {
-        const next = [...prev];
-        if (next[msgIndex]) next[msgIndex] = { ...next[msgIndex], recommendations: recs };
-        return next;
-      });
-    } catch { /* non-critical */ }
-  }
-
   async function sendMessage(text?: string) {
     const question = (text ?? input).trim();
     if (!question || loading || !guestId) return;
@@ -244,29 +221,22 @@ export function TutorChat() {
       onMetadata: (data) => updateLastAssistantMessage(data),
       onError: (err) => updateLastAssistantMessage({ content: `⚠️ ${err}` }),
       onDone: (metadata) => {
-        if (mode === "tutor") {
-          fetchRecommendations(question, metadata.relatedConcepts || [], assistantMsgIndex).catch(() => {});
+        if (mode === "tutor" && metadata.recommendations) {
+          setMessages(prev => {
+            const next = [...prev];
+            if (next[assistantMsgIndex]) next[assistantMsgIndex] = { ...next[assistantMsgIndex], recommendations: metadata.recommendations };
+            return next;
+          });
+        }
+        if (metadata.xpGained) {
+          setXpToast(`+${metadata.xpGained} XP`);
+          setTimeout(() => setXpToast(null), 2500);
+          setProfileXp(prev => prev + metadata.xpGained);
         }
         loadSessions(guestId);
-        updateProfile();
       }
     });
   }
-
-  const updateProfile = useCallback(() => {
-    if (!guestId) return;
-    fetch(`/api/gamification/profile?guestId=${guestId}`)
-      .then(r => r.json())
-      .then(p => {
-        const gained = p.xp - profileXp;
-        if (gained > 0) {
-          setXpToast(`+${gained} XP`);
-          setTimeout(() => setXpToast(null), 2500);
-        }
-        setProfileXp(p.xp);
-      })
-      .catch(() => {});
-  }, [guestId, profileXp]);
 
   // Funciones auxiliares para limpiar el estado de mensajes
   function updateLastAssistantMessage(patch: Partial<Message>) {
