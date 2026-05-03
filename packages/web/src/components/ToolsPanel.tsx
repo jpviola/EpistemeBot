@@ -68,6 +68,8 @@ export default function ToolsPanel({ open = true, onClose, sessionId, guestId }:
       fetchAttachments();
     }
   }, [type, sessionId]);
+
+  useEffect(() => {
     if (open) {
       // panel opened metric
       fetch("/api/metrics", {
