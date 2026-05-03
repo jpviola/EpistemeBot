@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useSession, signOut } from "next-auth/react";
 import s from "./TutorChat.module.css";
+import ToolsPanel from "./ToolsPanel";
 import { getLevelInfo } from "@/lib/levels";
 
 type Level = "secondary" | "cbc" | "university" | "specialist";
@@ -117,6 +118,7 @@ export function TutorChat() {
   const [loading,   setLoading]   = useState(false);
   const [xpToast,   setXpToast]   = useState<string | null>(null);
   const [profileXp, setProfileXp] = useState<number>(0);
+  const [toolsOpen, setToolsOpen] = useState(false);
 
   const { data: session } = useSession();
   const bottomRef   = useRef<HTMLDivElement>(null);
@@ -130,6 +132,9 @@ export function TutorChat() {
       .then(p => setProfileXp(p.xp ?? 0))
       .catch(() => {});
   }, []);
+
+  // expose current sessionId to window for tools (PoC)
+  useEffect(() => { (window as any)._sessionId = sessionId ?? null; }, [sessionId]);
 
   const loadSessions = useCallback(async (gid: string) => {
     if (!gid) return;
@@ -411,6 +416,12 @@ export function TutorChat() {
 
         {/* Bottom: XP + ranking + auth */}
         <div className={s.sidebarBottom}>
+          <div className={s.sidebarSection}>
+            {!collapsed && <span className={s.sidebarLabel}>Herramientas</span>}
+            <button className={s.newChatBtn} onClick={() => setToolsOpen(true)} title="Abrir herramientas">
+              {collapsed ? "🧰" : "Herramientas"}
+            </button>
+          </div>
           {guestId && (
             <Link href="/recompensas" className={s.xpBtn} title={`${profileXp} XP · Nivel ${li.level}`}>
               <span className={s.xpEmoji}>{li.emoji}</span>
@@ -601,6 +612,7 @@ export function TutorChat() {
         </div>
 
       </div>
+      <ToolsPanel open={toolsOpen} onClose={() => setToolsOpen(false)} />
     </div>
   );
 }
