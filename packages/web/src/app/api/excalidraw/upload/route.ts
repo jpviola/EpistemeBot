@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { db } from "../../../../lib/db";
+import { auth } from "../../../../lib/auth";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION || "us-east-1",
@@ -10,13 +11,31 @@ const BUCKET = process.env.S3_BUCKET || "episteme-attachments";
 
 // Recibe SVG/JSON y sube a S3, guarda en DB
 export async function POST(req: NextRequest) {
-  try {
-    const body = await req.json().catch(() => null);
-    if (!body || !body.content || !body.filename || !body.sessionId) {
-      return Response.json({ ok: false, error: "missing content, filename, or sessionId" }, { status: 400 });
-    }
+  const body = await req.json().catch(() => null);
+  if (!body || !body.content || !body.filename || !body.sessionId) {
+    return Response.json({ ok: false, error: "missing content, filename, or sessionId" }, { status: 400 });
+  }
 
-    // Upload to S3
+  // Auth check
+  const sessionAuth = await auth();
+  let guestId: string | null = null;
+  if (sessionAuth?.user) {
+    const user = await db.user.findUnique({ where: { id: sessionAuth.user.id } });
+    guestId = user?.guestId || null;
+  } else {
+    guestId = body.guestId;
+  }
+  if (!guestId) {
+    return Response.json({ ok: false, error: "Unauthorized: no guestId" }, { status: 401 });
+  }
+
+  // Verify session ownership
+  const sess = await db.session.findUnique({ where: { id: body.sessionId } });
+  if (!sess || sess.guestId !== guestId) {
+    return Response.json({ ok: false, error: "Unauthorized: session not owned" }, { status: 403 });
+  }
+
+  try {
     const key = `attachments/${body.filename}`;
     await s3.send(new PutObjectCommand({
       Bucket: BUCKET,

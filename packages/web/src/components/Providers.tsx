@@ -6,12 +6,20 @@ import { useEffect } from "react";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   useEffect(() => {
-    if (typeof window !== "undefined" && process.env.NEXT_PUBLIC_SENTRY_DSN) {
-      try {
-        Sentry.init({ dsn: process.env.NEXT_PUBLIC_SENTRY_DSN });
-        console.info("[sentry] browser initialized");
-      } catch (e) {
-        console.warn("[sentry] browser init failed", e);
+    if (typeof window !== "undefined") {
+      // Ensure guestId is set
+      if (!localStorage.getItem('guestId')) {
+        const guestId = crypto.randomUUID();
+        localStorage.setItem('guestId', guestId);
+      }
+
+      if (process.env.NEXT_PUBLIC_SENTRY_DSN) {
+        try {
+          Sentry.init({ dsn: process.env.NEXT_PUBLIC_SENTRY_DSN });
+          console.info("[sentry] browser initialized");
+        } catch (e) {
+          console.warn("[sentry] browser init failed", e);
+        }
       }
     }
   }, []);

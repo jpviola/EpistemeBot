@@ -1,6 +1,7 @@
 import { NextRequest } from "next/server";
 import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
 import { db } from "../../../../lib/db";
+import { auth } from "../../../../lib/auth";
 
 const s3 = new S3Client({
   region: process.env.AWS_REGION || "us-east-1",
@@ -13,6 +14,25 @@ export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body || !body.sessionId || !body.data) {
     return Response.json({ ok: false, error: "Missing sessionId or data" }, { status: 400 });
+  }
+
+  // Auth check
+  const session = await auth();
+  let guestId: string | null = null;
+  if (session?.user) {
+    const user = await db.user.findUnique({ where: { id: session.user.id } });
+    guestId = user?.guestId || null;
+  } else {
+    guestId = body.guestId;
+  }
+  if (!guestId) {
+    return Response.json({ ok: false, error: "Unauthorized: no guestId" }, { status: 401 });
+  }
+
+  // Verify session ownership
+  const sess = await db.session.findUnique({ where: { id: body.sessionId } });
+  if (!sess || sess.guestId !== guestId) {
+    return Response.json({ ok: false, error: "Unauthorized: session not owned" }, { status: 403 });
   }
 
   try {

@@ -10,6 +10,7 @@ export default function ExcalidrawTool() {
   const excalidrawRef = useRef<any>(null);
   const [message, setMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const guestId = typeof window !== 'undefined' ? localStorage.getItem('guestId') : null;
 
   async function exportToJson() {
     try {
@@ -20,7 +21,7 @@ export default function ExcalidrawTool() {
       const res = await fetch("/api/excalidraw/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId: (window as any)._sessionId ?? null, data }),
+        body: JSON.stringify({ sessionId: (window as any)._sessionId ?? null, data, guestId }),
       });
       const j = await res.json();
       if (j.ok) {
@@ -43,7 +44,7 @@ export default function ExcalidrawTool() {
       const upl = await fetch("/api/excalidraw/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename, content: svgStr, sessionId: (window as any)._sessionId ?? null }),
+        body: JSON.stringify({ filename, content: svgStr, sessionId: (window as any)._sessionId ?? null, guestId }),
       });
       const uj = await upl.json();
       if (uj.ok) setMessage("Subido: " + uj.url);
