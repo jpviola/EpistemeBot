@@ -123,12 +123,40 @@ export default function ToolsPanel({ open = true, onClose, sessionId, guestId }:
   }
 
   return (
-    <div 
-      style={{ position: "fixed", right: 16, top: 64, width: 420, maxHeight: "75vh", background: "white", boxShadow: "0 6px 18px rgba(0,0,0,0.12)", borderRadius: 8, padding: 12, zIndex: 200 }}
-      role="dialog"
-      aria-labelledby="tools-panel-title"
-      aria-modal="true"
-    >
+    <>
+      <div 
+        style={{
+          position: "fixed",
+          top: 0,
+          left: 0,
+          right: 0,
+          bottom: 0,
+          backgroundColor: "rgba(0,0,0,0.5)",
+          zIndex: 199,
+        }}
+        onClick={onClose}
+        aria-hidden="true"
+      />
+      <div 
+        style={{ 
+          position: "fixed", 
+          left: "50%",
+          top: "50%",
+          transform: "translate(-50%, -50%)",
+          width: 420, 
+          maxHeight: "80vh", 
+          background: "white", 
+          boxShadow: "0 6px 18px rgba(0,0,0,0.12)", 
+          borderRadius: 8, 
+          padding: 12, 
+          zIndex: 200,
+          overflow: "auto"
+        }}
+        role="dialog"
+        aria-labelledby="tools-panel-title"
+        aria-modal="true"
+        onClick={(e) => e.stopPropagation()}
+      >
       <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
         <strong id="tools-panel-title">Herramientas</strong>
         <div>
@@ -260,5 +288,6 @@ export default function ToolsPanel({ open = true, onClose, sessionId, guestId }:
         )}
       </div>
     </div>
+    </>
   );
 }
