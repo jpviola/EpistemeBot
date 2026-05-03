@@ -8,13 +8,14 @@ const Excalidraw = dynamic(() => import("@excalidraw/excalidraw"), { ssr: false 
 
 type Props = {
   onSave?: () => void;
+  sessionId?: string;
+  guestId?: string;
 };
 
-export default function ExcalidrawTool({ onSave }: Props) {
+export default function ExcalidrawTool({ onSave, sessionId, guestId }: Props) {
   const excalidrawRef = useRef<any>(null);
   const [message, setMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
-  const guestId = typeof window !== 'undefined' ? localStorage.getItem('guestId') : null;
 
   async function exportToJson() {
     try {
@@ -25,7 +26,7 @@ export default function ExcalidrawTool({ onSave }: Props) {
       const res = await fetch("/api/excalidraw/save", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ sessionId: (window as any)._sessionId ?? null, data, guestId }),
+        body: JSON.stringify({ sessionId: sessionId ?? null, data, guestId }),
       });
       const j = await res.json();
       if (j.ok) {
@@ -49,7 +50,7 @@ export default function ExcalidrawTool({ onSave }: Props) {
       const upl = await fetch("/api/excalidraw/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename, content: svgStr, sessionId: (window as any)._sessionId ?? null, guestId }),
+        body: JSON.stringify({ filename, content: svgStr, sessionId: sessionId ?? null, guestId }),
       });
       const uj = await upl.json();
       if (uj.ok) {

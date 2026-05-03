@@ -8,6 +8,7 @@ import { useSession, signOut } from "next-auth/react";
 import s from "./TutorChat.module.css";
 import ToolsPanel from "./ToolsPanel";
 import { getLevelInfo } from "@/lib/levels";
+import { useTutorStream } from "@/hooks/useTutorStream";
 
 type Level = "secondary" | "cbc" | "university" | "specialist";
 type Mode  = "tutor" | "debate";
@@ -115,7 +116,7 @@ export function TutorChat() {
   const [sessionId, setSessionId] = useState<string>("");
   const [messages,  setMessages]  = useState<Message[]>([]);
   const [input,     setInput]     = useState("");
-  const [loading,   setLoading]   = useState(false);
+  const { startStream, loading }  = useTutorStream();
   const [xpToast,   setXpToast]   = useState<string | null>(null);
   const [profileXp, setProfileXp] = useState<number>(0);
   const [toolsOpen, setToolsOpen] = useState(false);
@@ -132,9 +133,6 @@ export function TutorChat() {
       .then(p => setProfileXp(p.xp ?? 0))
       .catch(() => {});
   }, []);
-
-  // expose current sessionId to window for tools (PoC)
-  useEffect(() => { (window as any)._sessionId = sessionId ?? null; }, [sessionId]);
 
   const loadSessions = useCallback(async (gid: string) => {
     if (!gid) return;
@@ -227,89 +225,66 @@ export function TutorChat() {
     const isFirst = messages.length === 0;
     // assistantMsgIndex will be messages.length + 1 after we push user + assistant placeholder
     const assistantMsgIndex = messages.length + 1;
-    setMessages(prev => [...prev, { role: "user", content: question }]);
-    setLoading(true);
-    setMessages(prev => [...prev, { role: "assistant", content: "" }]);
+    setMessages(prev => [
+      ...prev,
+      { role: "user", content: question },
+      { role: "assistant", content: "" }
+    ]);
 
-    let streamedRelatedConcepts: Array<{ label: string; relation: string; iri?: string }> = [];
+    const history = messages.map(m => ({ role: m.role, content: m.content }));
 
-    try {
-      const history = messages.map(m => ({ role: m.role, content: m.content }));
-      const res = await fetch("/api/tutor", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          question, level, mode,
-          sessionId: sid, guestId, isFirst, history,
-          interests: session?.user?.interests ?? [],
-        }),
-      });
-
-      const reader = res.body?.getReader();
-      if (!reader) return;
-      const decoder = new TextDecoder();
-      let buffer = "";
-
-      while (true) {
-        const { done, value } = await reader.read();
-        if (done) break;
-        buffer += decoder.decode(value, { stream: true });
-        const lines = buffer.split("\n\n");
-        buffer = lines.pop() ?? "";
-
-        for (const line of lines) {
-          if (!line.startsWith("data: ")) continue;
-          const raw = line.slice(6).trim();
-          if (raw === "[DONE]") break;
-          try {
-            const parsed = JSON.parse(raw);
-            if (parsed.error) {
-              setMessages(prev => {
-                const next = [...prev];
-                next[next.length - 1] = { ...next[next.length - 1], content: `⚠️ ${parsed.error}` };
-                return next;
-              });
-              break;
-            }
-            if (parsed.text) {
-              setMessages(prev => {
-                const next = [...prev];
-                const i = next.length - 1;
-                next[i] = { ...next[i], content: next[i].content + parsed.text };
-                return next;
-              });
-            }
-            if (parsed.prerequisites !== undefined) {
-              streamedRelatedConcepts = parsed.relatedConcepts ?? [];
-              setMessages(prev => {
-                const next = [...prev];
-                const i = next.length - 1;
-                next[i] = { ...next[i], prerequisites: parsed.prerequisites, relatedConcepts: parsed.relatedConcepts };
-                return next;
-              });
-            }
-          } catch { /* partial chunk */ }
+    await startStream({
+      url: "/api/tutor",
+      body: {
+        question, level, mode,
+        sessionId: sid, guestId, isFirst, history,
+        interests: session?.user?.interests ?? [],
+      },
+      onText: (text) => appendContentToLastMessage(text),
+      onMetadata: (data) => updateLastAssistantMessage(data),
+      onError: (err) => updateLastAssistantMessage({ content: `⚠️ ${err}` }),
+      onDone: (metadata) => {
+        if (mode === "tutor") {
+          fetchRecommendations(question, metadata.relatedConcepts || [], assistantMsgIndex).catch(() => {});
         }
+        loadSessions(guestId);
+        updateProfile();
       }
-    } finally {
-      setLoading(false);
-      // Fire recommendations fetch after the response completes (non-blocking)
-      if (mode === "tutor") {
-        fetchRecommendations(question, streamedRelatedConcepts, assistantMsgIndex).catch(() => {});
-      }
-      loadSessions(guestId);
-      fetch(`/api/gamification/profile?guestId=${guestId}`)
-        .then(r => r.json())
-        .then(p => {
-          const gained = p.xp - profileXp;
-          if (gained > 0) {
-            setXpToast(`+${gained} XP`);
-            setTimeout(() => setXpToast(null), 2500);
-          }
-          setProfileXp(p.xp);
-        })
-        .catch(() => {});
-    }
+    });
+  }
+
+  const updateProfile = useCallback(() => {
+    if (!guestId) return;
+    fetch(`/api/gamification/profile?guestId=${guestId}`)
+      .then(r => r.json())
+      .then(p => {
+        const gained = p.xp - profileXp;
+        if (gained > 0) {
+          setXpToast(`+${gained} XP`);
+          setTimeout(() => setXpToast(null), 2500);
+        }
+        setProfileXp(p.xp);
+      })
+      .catch(() => {});
+  }, [guestId, profileXp]);
+
+  // Funciones auxiliares para limpiar el estado de mensajes
+  function updateLastAssistantMessage(patch: Partial<Message>) {
+    setMessages(prev => {
+      const next = [...prev];
+      const i = next.length - 1;
+      if (i >= 0) next[i] = { ...next[i], ...patch };
+      return next;
+    });
+  }
+
+  function appendContentToLastMessage(text: string) {
+    setMessages(prev => {
+      const next = [...prev];
+      const i = next.length - 1;
+      if (i >= 0) next[i] = { ...next[i], content: next[i].content + text };
+      return next;
+    });
   }
 
   const li = getLevelInfo(profileXp);

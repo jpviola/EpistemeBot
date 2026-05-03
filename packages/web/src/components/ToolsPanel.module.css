@@ -1,0 +1,163 @@
+.overlay {
+  position: fixed;
+  top: 0; left: 0; right: 0; bottom: 0;
+  background-color: rgba(26, 26, 46, 0.4);
+  z-index: 199;
+  backdrop-filter: blur(2px);
+}
+
+.dialog {
+  position: fixed;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  width: 90%;
+  max-width: 480px;
+  max-height: 85vh;
+  background: #fff;
+  border: 3px solid #1a1a2e;
+  box-shadow: 8px 8px 0 #1a1a2e;
+  border-radius: 16px;
+  padding: 24px;
+  z-index: 200;
+  overflow-y: auto;
+}
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  padding-bottom: 12px;
+  border-bottom: 2px solid #f0f0f0;
+}
+
+.title {
+  font-size: 1.2rem;
+  font-weight: 800;
+  color: #1a1a2e;
+}
+
+.closeBtn {
+  background: #eee;
+  border: 2px solid #1a1a2e;
+  border-radius: 8px;
+  padding: 4px 12px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.1s;
+}
+
+.closeBtn:hover {
+  background: #FF6B6B;
+  color: white;
+}
+
+.field {
+  margin-bottom: 16px;
+}
+
+.label {
+  display: block;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #1a1a2e;
+  margin-bottom: 6px;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.select, .textarea {
+  width: 100%;
+  padding: 10px;
+  border: 2px solid #1a1a2e;
+  border-radius: 10px;
+  font-family: inherit;
+  background: #FAF7F2;
+  outline: none;
+  transition: box-shadow 0.15s;
+}
+
+.select:focus, .textarea:focus {
+  box-shadow: 3px 3px 0 #1a1a2e;
+}
+
+.description {
+  font-size: 0.8rem;
+  color: #78716c;
+  margin-top: 6px;
+  line-height: 1.4;
+}
+
+.actions {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 20px;
+}
+
+.primaryBtn {
+  background: #FFE566;
+  border: 2px solid #1a1a2e;
+  padding: 8px 20px;
+  border-radius: 10px;
+  font-weight: 800;
+  cursor: pointer;
+  box-shadow: 3px 3px 0 #1a1a2e;
+}
+
+.primaryBtn:hover:not(:disabled) {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 #1a1a2e;
+}
+
+.secondaryBtn {
+  background: #fff;
+  border: 2px solid #1a1a2e;
+  padding: 8px 16px;
+  border-radius: 10px;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.outputArea {
+  margin-top: 16px;
+  border-top: 2.5px solid #1a1a2e;
+  padding-top: 16px;
+}
+
+.formatLabel {
+  font-size: 0.75rem;
+  font-weight: 800;
+  color: #4ECDC4;
+  text-transform: uppercase;
+  margin-bottom: 10px;
+}
+
+.attachmentList {
+  list-style: none;
+  padding: 0;
+  margin: 12px 0;
+}
+
+.attachmentItem {
+  padding: 8px;
+  background: #f9f9f9;
+  border: 1px solid #eee;
+  border-radius: 8px;
+  margin-bottom: 8px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.attachmentLink {
+  color: #0070f3;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.attachmentDate {
+  font-size: 0.8em;
+  color: #666;
+  margin-left: auto;
+}

@@ -7,6 +7,7 @@ import TimelineRenderer from "./tool-renderers/TimelineRenderer";
 import InfographicRenderer from "./tool-renderers/InfographicRenderer";
 import StudyPlanRenderer from "./tool-renderers/StudyPlanRenderer";
 import ExcalidrawTool from "./ExcalidrawTool";
+import s from "./ToolsPanel.module.css";
 
 const STUDY_TECHNIQUES = {
   "flip-classroom": {
@@ -124,55 +125,30 @@ export default function ToolsPanel({ open = true, onClose, sessionId, guestId }:
 
   return (
     <>
+      <div className={s.overlay} onClick={onClose} aria-hidden="true" />
       <div 
-        style={{
-          position: "fixed",
-          top: 0,
-          left: 0,
-          right: 0,
-          bottom: 0,
-          backgroundColor: "rgba(0,0,0,0.5)",
-          zIndex: 199,
-        }}
-        onClick={onClose}
-        aria-hidden="true"
-      />
-      <div 
-        style={{ 
-          position: "fixed", 
-          left: "50%",
-          top: "50%",
-          transform: "translate(-50%, -50%)",
-          width: 420, 
-          maxHeight: "80vh", 
-          background: "white", 
-          boxShadow: "0 6px 18px rgba(0,0,0,0.12)", 
-          borderRadius: 8, 
-          padding: 12, 
-          zIndex: 200,
-          overflow: "auto"
-        }}
+        className={s.dialog}
         role="dialog"
         aria-labelledby="tools-panel-title"
         aria-modal="true"
         onClick={(e) => e.stopPropagation()}
       >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 8 }}>
-        <strong id="tools-panel-title">Herramientas</strong>
+      <div className={s.header}>
+        <strong id="tools-panel-title" className={s.title}>Herramientas</strong>
         <div>
-          <button onClick={() => onClose?.()} style={{ marginRight: 8 }} aria-label="Cerrar panel de herramientas">
+          <button onClick={() => onClose?.()} className={s.closeBtn} aria-label="Cerrar panel de herramientas">
             Cerrar
           </button>
         </div>
       </div>
 
-      <div style={{ marginBottom: 8 }}>
-        <label htmlFor="tool-type-select" style={{ display: "block", marginBottom: 6 }}>Tipo</label>
+      <div className={s.field}>
+        <label htmlFor="tool-type-select" className={s.label}>Tipo</label>
         <select 
           id="tool-type-select"
           value={type} 
           onChange={(e) => setType(e.target.value)} 
-          style={{ width: "100%" }}
+          className={s.select}
           aria-describedby="tool-type-description"
         >
           <option value="concept-map">Mapa conceptual (Mermaid)</option>
@@ -183,34 +159,34 @@ export default function ToolsPanel({ open = true, onClose, sessionId, guestId }:
           <option value="excalidraw">Canvas: Excalidraw</option>
           <option value="study-techniques">Técnicas de estudio</option>
         </select>
-        <div id="tool-type-description" style={{ fontSize: "0.9em", color: "#666", marginTop: 4 }}>
+        <div id="tool-type-description" className={s.description}>
           Selecciona el tipo de herramienta para generar contenido visual.
         </div>
       </div>
 
-      <div style={{ marginBottom: 8 }}>
-        <label htmlFor="tool-prompt-textarea" style={{ display: "block", marginBottom: 6 }}>Prompt</label>
+      <div className={s.field}>
+        <label htmlFor="tool-prompt-textarea" className={s.label}>Prompt</label>
         <textarea 
           id="tool-prompt-textarea"
           value={prompt} 
           onChange={(e) => setPrompt(e.target.value)} 
           rows={5} 
-          style={{ width: "100%" }}
+          className={s.textarea}
           aria-describedby="prompt-description"
         />
-        <div id="prompt-description" style={{ fontSize: "0.9em", color: "#666", marginTop: 4 }}>
+        <div id="prompt-description" className={s.description}>
           Describe lo que quieres generar.
         </div>
       </div>
 
       {type === "study-techniques" && (
-        <div style={{ marginBottom: 8 }}>
-          <label htmlFor="study-technique-select" style={{ display: "block", marginBottom: 6 }}>Técnica</label>
+        <div className={s.field}>
+          <label htmlFor="study-technique-select" className={s.label}>Técnica</label>
           <select 
             id="study-technique-select"
             value={studyTechnique} 
             onChange={(e) => setStudyTechnique(e.target.value)} 
-            style={{ width: "100%" }}
+            className={s.select}
           >
             <option value="flip-classroom">Aula invertida (Flip Classroom)</option>
             <option value="flashcards">Tarjetas de memoria (Flashcards)</option>
@@ -219,16 +195,16 @@ export default function ToolsPanel({ open = true, onClose, sessionId, guestId }:
         </div>
       )}
 
-      <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
-        <button onClick={generate} disabled={loading} aria-label={loading ? "Generando contenido" : "Generar contenido"}>
+      <div className={s.actions}>
+        <button onClick={generate} className={s.primaryBtn} disabled={loading} aria-label={loading ? "Generando contenido" : "Generar contenido"}>
           {loading ? "Generando…" : "Generar"}
         </button>
-        <button onClick={() => { setPrompt(""); setResult(null); setStudyTechnique("retrieval"); }} aria-label="Limpiar prompt y resultado">
+        <button onClick={() => { setPrompt(""); setResult(null); setStudyTechnique("retrieval"); }} className={s.secondaryBtn} aria-label="Limpiar prompt y resultado">
           Limpiar
         </button>
       </div>
 
-      <div style={{ maxHeight: 320, overflow: "auto", borderTop: "1px solid #eee", paddingTop: 8 }}>
+      <div className={s.outputArea}>
         {result === null ? (
           type === "study-techniques" ? (
             <div>
@@ -240,25 +216,29 @@ export default function ToolsPanel({ open = true, onClose, sessionId, guestId }:
           )
         ) : (
           <div>
-            <div style={{ marginBottom: 6, color: "#333" }}>Formato: {format}</div>
+            <div className={s.formatLabel}>Formato: {format}</div>
             {type === "excalidraw" ? (
               <div>
                 <div style={{ height: 480 }}>
-                  <ExcalidrawTool onSave={fetchAttachments} />
+                  <ExcalidrawTool 
+                    onSave={fetchAttachments} 
+                    sessionId={sessionId} 
+                    guestId={guestId} 
+                  />
                 </div>
                 {attachments.length > 0 && (
                   <div style={{ marginTop: 16, borderTop: "1px solid #eee", paddingTop: 8 }}>
                     <h4 id="attachments-heading">Attachments</h4>
-                    <ul role="list" aria-labelledby="attachments-heading" style={{ listStyle: "none", padding: 0 }}>
+                    <ul role="list" aria-labelledby="attachments-heading" className={s.attachmentList}>
                       {attachments.map((att) => (
-                        <li key={att.id} role="listitem" style={{ marginBottom: 4, display: "flex", alignItems: "center", gap: 8 }}>
-                          <a href={att.url} target="_blank" rel="noopener noreferrer" style={{ color: "#0070f3" }} aria-label={`Descargar ${att.filename} creado el ${new Date(att.createdAt).toLocaleString()}`}>
+                        <li key={att.id} role="listitem" className={s.attachmentItem}>
+                          <a href={att.url} target="_blank" rel="noopener noreferrer" className={s.attachmentLink} aria-label={`Descargar ${att.filename} creado el ${new Date(att.createdAt).toLocaleString()}`}>
                             {att.filename}
                           </a>
                           <button onClick={() => copyToClipboard(att.url)} aria-label={`Copiar link de ${att.filename}`} style={{ fontSize: "0.8em" }}>
                             📋 Compartir
                           </button>
-                          <span style={{ fontSize: "0.8em", color: "#666" }}>({new Date(att.createdAt).toLocaleString()})</span>
+                          <span className={s.attachmentDate}>({new Date(att.createdAt).toLocaleString()})</span>
                         </li>
                       ))}
                     </ul>
