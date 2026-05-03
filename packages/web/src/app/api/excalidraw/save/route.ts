@@ -1,37 +1,47 @@
 import { NextRequest } from "next/server";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { db } from "../../../../lib/db";
 
-// PoC: guarda el JSON del canvas como "attachment" en la sesión (simulado)
+const s3 = new S3Client({
+  region: process.env.AWS_REGION || "us-east-1",
+});
+
+const BUCKET = process.env.S3_BUCKET || "episteme-attachments";
+
+// Guarda el JSON del canvas como attachment en la sesión
 export async function POST(req: NextRequest) {
   const body = await req.json().catch(() => null);
   if (!body || !body.sessionId || !body.data) {
     return Response.json({ ok: false, error: "Missing sessionId or data" }, { status: 400 });
   }
 
-  // Aquí deberías persistir en la base (DB / attachments). Para el PoC guardamos en /tmp (no persistente)
   try {
-    // create a filename
     const name = `excalidraw-${body.sessionId}-${Date.now()}.json`;
-    // write to temporary folder (Node FS available on server)
-    const fs = await import("fs");
-    const path = await import("path");
-    const tmpDir = path.join(process.cwd(), "tmp");
-    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
-    const filePath = path.join(tmpDir, name);
     const content = typeof body.data === "string" ? body.data : JSON.stringify(body.data);
-    fs.writeFileSync(filePath, content);
 
-    // Save metadata to attachments index (PoC). In production persist in DB.
-    const indexPath = path.join(tmpDir, "attachments.json");
-    let index = [];
-    if (fs.existsSync(indexPath)) {
-      try { index = JSON.parse(fs.readFileSync(indexPath, "utf8")); } catch {}
-    }
-    const record = { id: name, sessionId: body.sessionId, path: `/tmp/${name}`, createdAt: new Date().toISOString() };
-    index.push(record);
-    fs.writeFileSync(indexPath, JSON.stringify(index, null, 2));
+    // Upload to S3
+    const key = `attachments/${name}`;
+    await s3.send(new PutObjectCommand({
+      Bucket: BUCKET,
+      Key: key,
+      Body: content,
+      ContentType: "application/json",
+    }));
 
-    return Response.json({ ok: true, file: `/tmp/${name}`, record });
+    const url = `https://${BUCKET}.s3.${process.env.AWS_REGION || "us-east-1"}.amazonaws.com/${key}`;
+
+    // Save to DB
+    const attachment = await db.attachment.create({
+      data: {
+        sessionId: body.sessionId,
+        url,
+        filename: name,
+      },
+    });
+
+    return Response.json({ ok: true, url, attachment });
   } catch (e) {
+    console.error(e);
     return Response.json({ ok: false, error: String(e) }, { status: 500 });
   }
 }

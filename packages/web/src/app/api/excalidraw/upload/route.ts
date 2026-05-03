@@ -1,33 +1,44 @@
 import { NextRequest } from "next/server";
+import { S3Client, PutObjectCommand } from "@aws-sdk/client-s3";
+import { db } from "../../../../lib/db";
 
-// PoC: recibe multipart or raw SVG/JSON and escribe en tmp, devuelve URL simulada
+const s3 = new S3Client({
+  region: process.env.AWS_REGION || "us-east-1",
+});
+
+const BUCKET = process.env.S3_BUCKET || "episteme-attachments";
+
+// Recibe SVG/JSON y sube a S3, guarda en DB
 export async function POST(req: NextRequest) {
   try {
     const body = await req.json().catch(() => null);
-    if (!body || !body.content || !body.filename) {
-      return Response.json({ ok: false, error: "missing content or filename" }, { status: 400 });
+    if (!body || !body.content || !body.filename || !body.sessionId) {
+      return Response.json({ ok: false, error: "missing content, filename, or sessionId" }, { status: 400 });
     }
 
-    const fs = await import("fs");
-    const path = await import("path");
-    const tmpDir = path.join(process.cwd(), "tmp");
-    if (!fs.existsSync(tmpDir)) fs.mkdirSync(tmpDir, { recursive: true });
-    const filePath = path.join(tmpDir, body.filename);
-    fs.writeFileSync(filePath, body.content);
+    // Upload to S3
+    const key = `attachments/${body.filename}`;
+    await s3.send(new PutObjectCommand({
+      Bucket: BUCKET,
+      Key: key,
+      Body: body.content,
+      ContentType: body.filename.endsWith('.svg') ? 'image/svg+xml' : 'application/json',
+    }));
 
-    // Append metadata to attachments index
-    const indexPath = path.join(tmpDir, "attachments.json");
-    let index = [];
-    if (fs.existsSync(indexPath)) {
-      try { index = JSON.parse(fs.readFileSync(indexPath, "utf8")); } catch {}
-    }
-    const record = { id: body.filename, url: `/tmp/${body.filename}`, createdAt: new Date().toISOString() };
-    index.push(record);
-    fs.writeFileSync(indexPath, JSON.stringify(index, null, 2));
+    const url = `https://${BUCKET}.s3.${process.env.AWS_REGION || "us-east-1"}.amazonaws.com/${key}`;
 
-    // In real system, upload to S3/GCS and return public URL
-    return Response.json({ ok: true, url: `/tmp/${body.filename}`, record });
+    // Save to DB
+    const attachment = await db.attachment.create({
+      data: {
+        sessionId: body.sessionId,
+        url,
+        filename: body.filename,
+      },
+    });
+
+    return Response.json({ ok: true, url, attachment });
   } catch (e) {
+    console.error(e);
     return Response.json({ ok: false, error: String(e) }, { status: 500 });
   }
 }

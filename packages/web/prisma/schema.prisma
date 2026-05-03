@@ -127,3 +127,12 @@ model ConceptEmbedding {
   embedding  String   // JSON: number[]
   updatedAt  DateTime @updatedAt
 }
+
+// ── Attachments ────────────────────────────────────
+model Attachment {
+  id        String   @id @default(cuid())
+  sessionId String?
+  url       String
+  filename  String
+  createdAt DateTime @default(now())
+}

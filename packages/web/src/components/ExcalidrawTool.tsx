@@ -43,7 +43,7 @@ export default function ExcalidrawTool() {
       const upl = await fetch("/api/excalidraw/upload", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ filename, content: svgStr }),
+        body: JSON.stringify({ filename, content: svgStr, sessionId: (window as any)._sessionId ?? null }),
       });
       const uj = await upl.json();
       if (uj.ok) setMessage("Subido: " + uj.url);
