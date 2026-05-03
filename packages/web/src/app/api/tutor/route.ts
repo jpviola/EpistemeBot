@@ -1,5 +1,6 @@
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
+import * as pdfjs from "pdfjs-dist/legacy/build/pdf";
 import { OntologyRAG } from "@semhum/api/rag/ontology-rag";
 import { SparqlClient } from "@semhum/api/sparql/client";
 import {
@@ -19,7 +20,10 @@ import { rewardExchange } from "@/lib/gamification";
 import { getRecommendations } from "@/lib/recommendations";
 
 const anthropic = new Anthropic();
-const sparql    = SparqlClient.createInMemory();
+const sparql    = SparqlClient.fromEnv({
+  url:  process.env.GRAPHDB_URL  || "http://localhost:7200",
+  repo: process.env.GRAPHDB_REPO || "senhum"
+});
 const rag       = new OntologyRAG(sparql);
 
 export async function POST(req: NextRequest) {
@@ -32,12 +36,56 @@ export async function POST(req: NextRequest) {
     isFirst?:   boolean;
     interests?: string[];
     history?:   Array<{ role: "user" | "assistant"; content: string }>;
+    attachment?: { name: string; type: string; data: string };
   };
 
-  const { question, level, mode = "tutor", sessionId, guestId, isFirst = false, interests = [], history = [] } = body;
+  const { question, level, mode = "tutor", sessionId, guestId, isFirst = false, interests = [], history = [], attachment } = body;
 
   if (!question || !level || !sessionId || !guestId) {
     return Response.json({ error: "Faltan parámetros requeridos" }, { status: 400 });
+  }
+
+  let contextFromAttachment = "";
+  let imageBlock: any = null;
+
+  if (attachment) {
+    if (attachment.type.startsWith("image/")) {
+      imageBlock = {
+        type: "image",
+        source: {
+          type: "base64",
+          media_type: attachment.type,
+          data: attachment.data,
+        },
+      };
+    } else if (attachment.type === "application/pdf") {
+      const buffer = Buffer.from(attachment.data, "base64");
+
+      const MAX_SIZE = 5 * 1024 * 1024; // Límite de 5MB
+      if (buffer.length > MAX_SIZE) {
+        throw new Error("El archivo PDF excede el límite de 5MB permitido.");
+      }
+
+      // Extracción robusta usando PDF.js
+      const data = new Uint8Array(buffer);
+      const loadingTask = pdfjs.getDocument({
+        data,
+        useSystemFonts: true,
+        disableWorker: true, // Necesario para entornos de servidor (Node.js)
+      });
+      
+      const pdfDoc = await loadingTask.promise;
+      let fullText = "";
+      
+      for (let i = 1; i <= pdfDoc.numPages; i++) {
+        const page = await pdfDoc.getPage(i);
+        const textContent = await page.getTextContent();
+        const pageText = textContent.items.map((item: any) => item.str).join(" ");
+        fullText += `[Página ${i}]: ${pageText}\n`;
+      }
+
+      contextFromAttachment = `\n\n[Contexto del PDF "${attachment.name}"]: \n${fullText}\n`;
+    }
   }
 
   // Guardar mensaje del usuario inmediatamente
@@ -71,20 +119,25 @@ export async function POST(req: NextRequest) {
           trackConceptProgress(guestId, concept.iri, concept.label).catch(() => {});
         }
 
-        // 3. Prompt enriquecido según el modo
-        const ctx = { question, level, ontologicalContext, pedagogicalInferences, relatedEntities };
+        // 3. Prompt enriquecido
+        const fullQuestion = `${contextFromAttachment}${question}`;
+        const ctx = { question: fullQuestion, level, ontologicalContext, pedagogicalInferences, relatedEntities };
         const userPrompt   = mode === "debate" ? buildDebateUserPrompt(ctx)       : buildTutorUserPrompt(ctx);
         const systemPrompt = mode === "debate" ? buildDebateSystemPrompt()        : buildTutorSystemPrompt(interests);
 
+        const userContent: any[] = [];
+        if (imageBlock) userContent.push(imageBlock);
+        userContent.push({ type: "text", text: userPrompt });
+
         const messages: Anthropic.MessageParam[] = [
           ...history.map(m => ({ role: m.role as "user" | "assistant", content: m.content })),
-          { role: "user", content: userPrompt },
+          { role: "user", content: userContent },
         ];
 
         // 4. Streaming desde Claude
         let fullResponse = "";
         const claudeStream = anthropic.messages.stream({
-          model:      "claude-sonnet-4-6",
+          model:      "claude-3-5-sonnet-20240620",
           max_tokens: mode === "debate" ? 600 : 1500,
           system:     systemPrompt,
           messages,

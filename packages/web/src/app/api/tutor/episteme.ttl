@@ -1,0 +1,82 @@
+@prefix : <http://example.org/episteme#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix xml: <http://www.w3.org/XML/1998/namespace> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdfs-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@base <http://example.org/episteme> .
+
+<http://example.org/episteme> rdf:type owl:Ontology ;
+                               rdfs:comment "Ontología base para EpistemeBot - Tutor de Humanidades." .
+
+#################################################################
+#    Object Properties
+#################################################################
+
+###  http://example.org/episteme#belongsTo
+:belongsTo rdf:type owl:ObjectProperty ;
+           rdfs:domain :Concepto ;
+           rdfs:range :EscuelaPensamiento .
+
+###  http://example.org/episteme#criticizes
+:criticizes rdf:type owl:ObjectProperty ;
+            owl:inverseOf :isCriticizedBy ;
+            rdfs:domain :Persona ;
+            rdfs:range :Persona .
+
+###  http://example.org/episteme#isCriticizedBy
+:isCriticizedBy rdf:type owl:ObjectProperty ;
+                rdfs:domain :Persona ;
+                rdfs:range :Persona .
+
+###  http://example.org/episteme#influencedBy
+:influencedBy rdf:type owl:ObjectProperty ,
+                       owl:TransitiveProperty ;
+              rdfs:domain :Persona ;
+              rdfs:range :Persona .
+
+###  http://example.org/episteme#presupposes
+:presupposes rdf:type owl:ObjectProperty ,
+                      owl:TransitiveProperty ;
+             rdfs:domain :Concepto ;
+             rdfs:range :Concepto ;
+             rdfs:comment "Indica que un concepto es prerrequisito para entender otro. Es transitiva para permitir inferencias en cascada." .
+
+#################################################################
+#    Data properties
+#################################################################
+
+###  http://example.org/episteme#hasBloomLevel
+:hasBloomLevel rdf:type owl:DatatypeProperty ;
+               rdfs:domain :Concepto ;
+               rdfs:range xsd:string .
+
+###  http://example.org/episteme#hasPedagogicalWeight
+:hasPedagogicalWeight rdf:type owl:DatatypeProperty ;
+                      rdfs:domain :Concepto ;
+                      rdfs:range xsd:decimal .
+
+#################################################################
+#    Classes
+#################################################################
+
+:Concepto rdf:type owl:Class .
+
+:EscuelaPensamiento rdf:type owl:Class .
+
+:EventoHistorico rdf:type owl:Class .
+
+:Obra rdf:type owl:Class .
+
+:Persona rdf:type owl:Class .
+
+###  General Axioms
+[ rdf:type owl:AllDisjointClasses ;
+  owl:members ( :Concepto
+                :EscuelaPensamiento
+                :EventoHistorico
+                :Obra
+                :Persona
+              )
+] .

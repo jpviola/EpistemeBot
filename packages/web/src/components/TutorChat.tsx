@@ -107,6 +107,42 @@ const SendIcon = () => (
   </svg>
 );
 
+const StopIcon = () => (
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
+    <rect x="6" y="6" width="12" height="12" rx="2" />
+  </svg>
+);
+
+const CopyIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <rect x="9" y="9" width="13" height="13" rx="2" ry="2" /><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1" />
+  </svg>
+);
+
+const RedoIcon = () => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polyline points="23 4 23 10 17 10" /><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10" />
+  </svg>
+);
+
+const VolumeIcon = ({ active }: { active: boolean }) => (
+  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke={active ? "#FF6B6B" : "currentColor"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+    <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5" />
+    {active ? <line x1="23" y1="9" x2="17" y2="15" /> : (
+      <>
+        <path d="M19.07 4.93a10 10 0 0 1 0 14.14" />
+        <path d="M15.54 8.46a5 5 0 0 1 0 7.07" />
+      </>
+    )}
+  </svg>
+);
+
+const ClipIcon = () => (
+  <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="20" height="20">
+    <path fillRule="evenodd" d="M18.97 3.659a2.25 2.25 0 00-3.182 0l-10.94 10.94a3.75 3.75 0 105.304 5.303l7.693-7.693a.75.75 0 011.06 1.06l-7.693 7.693a5.25 5.25 0 11-7.424-7.424l10.939-10.94a3.75 3.75 0 115.303 5.304L9.097 18.835l-.008.008a2.25 2.25 0 01-3.182-3.182l10.94-10.94a.75.75 0 011.06 1.06l-10.94 10.94a.75.75 0 101.06 1.06l10.94-10.94a2.25 2.25 0 000-3.182z" clipRule="evenodd" />
+  </svg>
+);
+
 export function TutorChat() {
   const [guestId,   setGuestId]   = useState<string>("");
   const [collapsed, setCollapsed] = useState(false);
@@ -116,6 +152,8 @@ export function TutorChat() {
   const [sessionId, setSessionId] = useState<string>("");
   const [messages,  setMessages]  = useState<Message[]>([]);
   const [input,     setInput]     = useState("");
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [speakingIndex, setSpeakingIndex] = useState<number | null>(null);
   const { startStream, loading }  = useTutorStream();
   const [xpToast,   setXpToast]   = useState<string | null>(null);
   const [profileXp, setProfileXp] = useState<number>(0);
@@ -124,6 +162,8 @@ export function TutorChat() {
   const { data: session } = useSession();
   const bottomRef   = useRef<HTMLDivElement>(null);
   const textareaRef = useRef<HTMLTextAreaElement>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
+  const abortControllerRef = useRef<AbortController | null>(null);
 
   useEffect(() => {
     const id = getOrCreateGuestId();
@@ -161,6 +201,49 @@ export function TutorChat() {
     startNewChat();
   }
 
+  const handleCopy = (content: string) => {
+    navigator.clipboard.writeText(content);
+  };
+
+  const handleRedo = (index: number) => {
+    if (index > 0 && messages[index - 1].role === "user") {
+      sendMessage(messages[index - 1].content);
+    }
+  };
+
+  const handleListen = (index: number, content: string) => {
+    if (typeof window === "undefined") return;
+    if (speakingIndex === index) {
+      window.speechSynthesis.cancel();
+      setSpeakingIndex(null);
+      return;
+    }
+    window.speechSynthesis.cancel();
+    const utterance = new SpeechSynthesisUtterance(content);
+    utterance.onend = () => setSpeakingIndex(null);
+    setSpeakingIndex(index);
+    window.speechSynthesis.speak(utterance);
+  };
+
+  const stopThinking = () => {
+    abortControllerRef.current?.abort();
+  };
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const MAX_SIZE = 5 * 1024 * 1024; // 5MB
+    if (file.size > MAX_SIZE) {
+      alert("El archivo es demasiado grande. El límite máximo es de 5MB.");
+      if (fileInputRef.current) fileInputRef.current.value = "";
+      return;
+    }
+
+    setSelectedFile(file);
+    // Aquí podrías disparar una notificación de que el archivo se cargó
+  };
+
   async function loadSession(id: string) {
     if (!guestId) return;
     const res = await fetch(`/api/sessions/${id}?guestId=${guestId}`);
@@ -184,8 +267,30 @@ export function TutorChat() {
 
   async function sendMessage(text?: string) {
     const question = (text ?? input).trim();
-    if (!question || loading || !guestId) return;
+    if ((!question && !selectedFile) || loading || !guestId) return;
+
+    // Procesar archivo si existe
+    let attachment = null;
+    if (selectedFile) {
+      const base64 = await new Promise<string>((resolve) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve((reader.result as string).split(",")[1]);
+        reader.readAsDataURL(selectedFile);
+      });
+      attachment = {
+        name: selectedFile.name,
+        type: selectedFile.type,
+        data: base64,
+      };
+    }
+
     setInput("");
+    setSelectedFile(null);
+
+    // Abortar petición previa si existe antes de empezar una nueva
+    if (abortControllerRef.current) {
+      abortControllerRef.current.abort();
+    }
 
     let sid = sessionId;
     if (!sid) {
@@ -210,16 +315,24 @@ export function TutorChat() {
 
     const history = messages.map(m => ({ role: m.role, content: m.content }));
 
+    abortControllerRef.current = new AbortController();
+
     await startStream({
       url: "/api/tutor",
       body: {
         question, level, mode,
         sessionId: sid, guestId, isFirst, history,
         interests: session?.user?.interests ?? [],
+        attachment,
       },
+      signal: abortControllerRef.current.signal,
       onText: (text) => appendContentToLastMessage(text),
       onMetadata: (data) => updateLastAssistantMessage(data),
-      onError: (err) => updateLastAssistantMessage({ content: `⚠️ ${err}` }),
+      onError: (err) => {
+        // No mostrar error si fue cancelado manualmente
+        if (err.includes("AbortError")) return;
+        updateLastAssistantMessage({ content: `⚠️ ${err}` });
+      },
       onDone: (metadata) => {
         if (mode === "tutor" && metadata.recommendations) {
           setMessages(prev => {
@@ -331,9 +444,15 @@ export function TutorChat() {
         {/* Historial */}
         <div className={s.sessionList}>
           {sessions.length === 0 ? (
-            <p className={s.sessionEmpty}>
-              {collapsed ? "💬" : "Tus conversaciones\naparecerán aquí"}
-            </p>
+            <div className={s.sessionEmpty}>
+              <div className={s.sessionEmptyIcon}>💬</div>
+              {!collapsed && (
+                <>
+                  <p className={s.sessionEmptyTitle}>Sin historial</p>
+                  <span className={s.sessionEmptySub}>Tus chats guardados aparecerán aquí para que puedas retomarlos luego.</span>
+                </>
+              )}
+            </div>
           ) : (
             sessions.map(sess => (
               <div
@@ -481,6 +600,15 @@ export function TutorChat() {
                         </div>
                       )}
                     </div>
+                    {msg.role === "assistant" && msg.content !== "" && (
+                      <div className={s.bubbleActions}>
+                        <button className={s.actionBtn} onClick={() => handleCopy(msg.content)} title="Copiar"><CopyIcon /></button>
+                        <button className={s.actionBtn} onClick={() => handleRedo(i)} title="Reintentar"><RedoIcon /></button>
+                        <button className={s.actionBtn} onClick={() => handleListen(i, msg.content)} title="Escuchar">
+                          <VolumeIcon active={speakingIndex === i} />
+                        </button>
+                      </div>
+                    )}
                     {msg.role === "assistant" &&
                       (msg.prerequisites?.length ?? 0) + (msg.relatedConcepts?.length ?? 0) > 0 && (
                       <div className={s.chips}>
@@ -532,7 +660,33 @@ export function TutorChat() {
 
         {/* Input */}
         <div className={s.inputArea}>
+          {selectedFile && (
+            <div className={s.filePreview}>
+              <span>📄 {selectedFile.name}</span>
+              <button onClick={() => setSelectedFile(null)}>✕</button>
+            </div>
+          )}
+          {loading && (
+            <div className={s.progressBarWrapper}>
+              <div className={s.progressBar} />
+            </div>
+          )}
           <div className={s.inputRow}>
+            <input
+              type="file"
+              ref={fileInputRef}
+              style={{ display: "none" }}
+              accept=".pdf,image/*"
+              onChange={handleFileChange}
+            />
+            <button
+              className={s.uploadBtn}
+              onClick={() => fileInputRef.current?.click()}
+              title="Adjuntar PDF o imagen"
+              disabled={loading}
+            >
+              <ClipIcon />
+            </button>
             <textarea
               ref={textareaRef}
               className={`${s.textarea} ${isDebate ? s.textareaDebate : ""}`}
@@ -544,14 +698,24 @@ export function TutorChat() {
                 if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
               }}
             />
-            <button
-              className={`${s.sendBtn} ${isDebate ? s.sendBtnDebate : ""}`}
-              onClick={() => sendMessage()}
-              disabled={loading || !input.trim()}
-              aria-label="Enviar"
-            >
-              <SendIcon />
-            </button>
+            {loading ? (
+              <button
+                className={s.stopBtn}
+                onClick={stopThinking}
+                title="Detener respuesta"
+              >
+                <StopIcon />
+              </button>
+            ) : (
+              <button
+                className={`${s.sendBtn} ${isDebate ? s.sendBtnDebate : ""}`}
+                onClick={() => sendMessage()}
+                disabled={!input.trim() && !selectedFile}
+                aria-label="Enviar"
+              >
+                <SendIcon />
+              </button>
+            )}
           </div>
           <p className={s.hint}>Shift + Enter para nueva línea</p>
         </div>

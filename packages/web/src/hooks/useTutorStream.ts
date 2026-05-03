@@ -7,6 +7,7 @@ interface StreamOptions {
   onMetadata: (data: any) => void;
   onError: (error: string) => void;
   onDone: (metadata: any) => void;
+  signal?: AbortSignal;
 }
 
 export function useTutorStream() {
@@ -21,6 +22,7 @@ export function useTutorStream() {
           "Content-Type": "application/json",
         },
         body: JSON.stringify(options.body),
+        signal: options.signal,
       });
 
       if (!response.ok) {
