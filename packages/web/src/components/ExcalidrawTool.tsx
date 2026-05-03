@@ -6,7 +6,11 @@ import { useRef, useState } from "react";
 // Dynamic import to avoid SSR problems
 const Excalidraw = dynamic(() => import("@excalidraw/excalidraw"), { ssr: false });
 
-export default function ExcalidrawTool() {
+type Props = {
+  onSave?: () => void;
+};
+
+export default function ExcalidrawTool({ onSave }: Props) {
   const excalidrawRef = useRef<any>(null);
   const [message, setMessage] = useState<string | null>(null);
   const fileInputRef = useRef<HTMLInputElement | null>(null);
@@ -25,7 +29,8 @@ export default function ExcalidrawTool() {
       });
       const j = await res.json();
       if (j.ok) {
-        setMessage("Guardado en servidor: " + j.file);
+        setMessage("Guardado en servidor: " + j.url);
+        onSave?.();
       } else {
         setMessage("Error guardando: " + (j.error ?? "unknown"));
       }
@@ -47,8 +52,12 @@ export default function ExcalidrawTool() {
         body: JSON.stringify({ filename, content: svgStr, sessionId: (window as any)._sessionId ?? null, guestId }),
       });
       const uj = await upl.json();
-      if (uj.ok) setMessage("Subido: " + uj.url);
-      else setMessage("Error subiendo SVG: " + (uj.error ?? "unknown"));
+      if (uj.ok) {
+        setMessage("Subido: " + uj.url);
+        onSave?.();
+      } else {
+        setMessage("Error subiendo SVG: " + (uj.error ?? "unknown"));
+      }
     } catch (e) {
       setMessage("Error exportando SVG: " + String(e));
     }

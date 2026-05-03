@@ -612,7 +612,7 @@ export function TutorChat() {
         </div>
 
       </div>
-      <ToolsPanel open={toolsOpen} onClose={() => setToolsOpen(false)} />
+      <ToolsPanel open={toolsOpen} onClose={() => setToolsOpen(false)} sessionId={sessionId} guestId={guestId} />
     </div>
   );
 }

@@ -11,16 +11,38 @@ import ExcalidrawTool from "./ExcalidrawTool";
 type Props = {
   open?: boolean;
   onClose?: () => void;
+  sessionId?: string;
+  guestId?: string;
 };
 
-export default function ToolsPanel({ open = true, onClose }: Props) {
+export default function ToolsPanel({ open = true, onClose, sessionId, guestId }: Props) {
   const [type, setType] = useState<string>("concept-map");
   const [prompt, setPrompt] = useState<string>("");
   const [loading, setLoading] = useState(false);
   const [result, setResult] = useState<string | null>(null);
   const [format, setFormat] = useState<string | null>(null);
+  const [attachments, setAttachments] = useState<any[]>([]);
+
+  const fetchAttachments = async () => {
+    if (!sessionId) return;
+    try {
+      const params = new URLSearchParams({ sessionId });
+      if (guestId) params.set('guestId', guestId);
+      const res = await fetch(`/api/excalidraw/attachments?${params}`);
+      if (res.ok) {
+        const data = await res.json();
+        setAttachments(data);
+      }
+    } catch (e) {
+      console.error('Failed to fetch attachments', e);
+    }
+  };
 
   useEffect(() => {
+    if (type === 'canvas' && sessionId) {
+      fetchAttachments();
+    }
+  }, [type, sessionId]);
     if (open) {
       // panel opened metric
       fetch("/api/metrics", {
@@ -111,8 +133,24 @@ export default function ToolsPanel({ open = true, onClose }: Props) {
           <div>
             <div style={{ marginBottom: 6, color: "#333" }}>Formato: {format}</div>
             {type === "excalidraw" ? (
-              <div style={{ height: 480 }}>
-                <ExcalidrawTool />
+              <div>
+                <div style={{ height: 480 }}>
+                  <ExcalidrawTool onSave={fetchAttachments} />
+                </div>
+                {attachments.length > 0 && (
+                  <div style={{ marginTop: 16, borderTop: "1px solid #eee", paddingTop: 8 }}>
+                    <h4>Attachments</h4>
+                    <ul style={{ listStyle: "none", padding: 0 }}>
+                      {attachments.map((att) => (
+                        <li key={att.id} style={{ marginBottom: 4 }}>
+                          <a href={att.url} target="_blank" rel="noopener noreferrer" style={{ color: "#0070f3" }}>
+                            {att.filename}
+                          </a> ({new Date(att.createdAt).toLocaleString()})
+                        </li>
+                      ))}
+                    </ul>
+                  </div>
+                )}
               </div>
             ) : format === "mermaid" ? (
               <div style={{ border: "1px solid #f0f0f0", padding: 8 }}>
