@@ -1,0 +1,9 @@
+{
+  "compilerOptions": {
+    "ignoreDeprecations": "6.0"
+  },
+  "exclude": [
+    "node_modules"
+  ]
+}</content>
+<parameter name="filePath">c:\Users\juan_\OneDrive\Escritorio\Plataforma semántica de educación\tsconfig.json
