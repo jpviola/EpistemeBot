@@ -8,6 +8,21 @@ import InfographicRenderer from "./tool-renderers/InfographicRenderer";
 import StudyPlanRenderer from "./tool-renderers/StudyPlanRenderer";
 import ExcalidrawTool from "./ExcalidrawTool";
 
+const STUDY_TECHNIQUES = {
+  "flip-classroom": {
+    title: "Aula invertida (Flip Classroom)",
+    description: "El aula invertida es una metodología pedagógica en la que el aprendizaje se invierte: los estudiantes estudian el material teórico en casa (videos, lecturas) y en clase se dedican a actividades prácticas, discusiones y resolución de problemas. Esto permite un uso más eficiente del tiempo en clase y fomenta el aprendizaje activo."
+  },
+  "flashcards": {
+    title: "Tarjetas de memoria (Flashcards)",
+    description: "Aplicaciones como Anki o Quizlet te ayudan a repasar conceptos clave en intervalos estratégicos. El spacing effect funciona mejor cuando combinas el estudio espaciado con flashcards: crea tarjetas con preguntas en un lado y respuestas en el otro, y repasa en sesiones cortas pero frecuentes."
+  },
+  "active-study": {
+    title: "Técnicas activas de estudio",
+    description: "No se trata solo de releer los apuntes como un zombi. Para que el spacing effect funcione de verdad, combina el estudio espaciado con métodos efectivos como:\n\n🎯 Técnica de recuperación: En lugar de leer pasivamente, trata de recordar la información sin mirar los apuntes. Puedes hacerte preguntas o intentar explicar el tema en voz alta.\n\n🎯 Tarjetas de memoria (flashcards): Aplicaciones como Anki o Quizlet te ayudan a repasar conceptos clave en intervalos estratégicos.\n\n🎯 Enseñar a otra persona: Explicar lo que has aprendido a un compañero de clase (o incluso a tu gato) refuerza tu comprensión y memoria."
+  }
+};
+
 type Props = {
   open?: boolean;
   onClose?: () => void;
@@ -22,6 +37,16 @@ export default function ToolsPanel({ open = true, onClose, sessionId, guestId }:
   const [result, setResult] = useState<string | null>(null);
   const [format, setFormat] = useState<string | null>(null);
   const [attachments, setAttachments] = useState<any[]>([]);
+  const [studyTechnique, setStudyTechnique] = useState<string>("flip-classroom");
+
+  const copyToClipboard = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert("Link copiado al portapapeles");
+    } catch (e) {
+      alert("Error copiando: " + text);
+    }
+  };
 
   const fetchAttachments = async () => {
     if (!sessionId) return;
@@ -126,6 +151,7 @@ export default function ToolsPanel({ open = true, onClose, sessionId, guestId }:
           <option value="study-plan">Plan de estudio (JSON)</option>
           <option value="svg-map">SVG (directo)</option>
           <option value="excalidraw">Canvas: Excalidraw</option>
+          <option value="study-techniques">Técnicas de estudio</option>
         </select>
         <div id="tool-type-description" style={{ fontSize: "0.9em", color: "#666", marginTop: 4 }}>
           Selecciona el tipo de herramienta para generar contenido visual.
@@ -147,18 +173,41 @@ export default function ToolsPanel({ open = true, onClose, sessionId, guestId }:
         </div>
       </div>
 
+      {type === "study-techniques" && (
+        <div style={{ marginBottom: 8 }}>
+          <label htmlFor="study-technique-select" style={{ display: "block", marginBottom: 6 }}>Técnica</label>
+          <select 
+            id="study-technique-select"
+            value={studyTechnique} 
+            onChange={(e) => setStudyTechnique(e.target.value)} 
+            style={{ width: "100%" }}
+          >
+            <option value="flip-classroom">Aula invertida (Flip Classroom)</option>
+            <option value="flashcards">Tarjetas de memoria (Flashcards)</option>
+            <option value="active-study">Técnicas activas de estudio</option>
+          </select>
+        </div>
+      )}
+
       <div style={{ display: "flex", gap: 8, marginBottom: 8 }}>
         <button onClick={generate} disabled={loading} aria-label={loading ? "Generando contenido" : "Generar contenido"}>
           {loading ? "Generando…" : "Generar"}
         </button>
-        <button onClick={() => { setPrompt(""); setResult(null); }} aria-label="Limpiar prompt y resultado">
+        <button onClick={() => { setPrompt(""); setResult(null); setStudyTechnique("retrieval"); }} aria-label="Limpiar prompt y resultado">
           Limpiar
         </button>
       </div>
 
       <div style={{ maxHeight: 320, overflow: "auto", borderTop: "1px solid #eee", paddingTop: 8 }}>
         {result === null ? (
-          <div style={{ color: "#666" }}>La salida aparecerá aquí.</div>
+          type === "study-techniques" ? (
+            <div>
+              <h4>{STUDY_TECHNIQUES[studyTechnique as keyof typeof STUDY_TECHNIQUES]?.title}</h4>
+              <p style={{ whiteSpace: "pre-line" }}>{STUDY_TECHNIQUES[studyTechnique as keyof typeof STUDY_TECHNIQUES]?.description}</p>
+            </div>
+          ) : (
+            <div style={{ color: "#666" }}>La salida aparecerá aquí.</div>
+          )
         ) : (
           <div>
             <div style={{ marginBottom: 6, color: "#333" }}>Formato: {format}</div>
@@ -172,10 +221,14 @@ export default function ToolsPanel({ open = true, onClose, sessionId, guestId }:
                     <h4 id="attachments-heading">Attachments</h4>
                     <ul role="list" aria-labelledby="attachments-heading" style={{ listStyle: "none", padding: 0 }}>
                       {attachments.map((att) => (
-                        <li key={att.id} role="listitem" style={{ marginBottom: 4 }}>
+                        <li key={att.id} role="listitem" style={{ marginBottom: 4, display: "flex", alignItems: "center", gap: 8 }}>
                           <a href={att.url} target="_blank" rel="noopener noreferrer" style={{ color: "#0070f3" }} aria-label={`Descargar ${att.filename} creado el ${new Date(att.createdAt).toLocaleString()}`}>
                             {att.filename}
-                          </a> ({new Date(att.createdAt).toLocaleString()})
+                          </a>
+                          <button onClick={() => copyToClipboard(att.url)} aria-label={`Copiar link de ${att.filename}`} style={{ fontSize: "0.8em" }}>
+                            📋 Compartir
+                          </button>
+                          <span style={{ fontSize: "0.8em", color: "#666" }}>({new Date(att.createdAt).toLocaleString()})</span>
                         </li>
                       ))}
                     </ul>
