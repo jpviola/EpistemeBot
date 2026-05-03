@@ -1,0 +1,66 @@
+{
+  "typescript.preferences.includePackageJsonAutoImports": "auto",
+  "typescript.preferences.excludeLibraryFromAutoImports": [
+    "node_modules"
+  ],
+  "typescript.preferences.noSemicolons": "off",
+  "typescript.suggest.autoImports": true,
+  "typescript.validate.enable": true,
+  "typescript.preferences.includeCompletionsForImportStatements": true,
+  "typescript.preferences.includeCompletionsForModuleExports": true,
+  "typescript.preferences.includeCompletionsWithInsertText": true,
+  "typescript.preferences.includeCompletionsWithSnippetText": true,
+  "typescript.preferences.includeCompletionsWithClassMemberSnippets": true,
+  "typescript.preferences.includeCompletionsWithObjectLiteralMethodSnippets": true,
+  "typescript.preferences.useAliasesForRenames": true,
+  "typescript.preferences.renameShorthandProperties": true,
+  "typescript.preferences.usePlaceholderText": true,
+  "typescript.updateImportsOnFileMove.enabled": "always",
+  "typescript.suggest.completeFunctionCalls": true,
+  "typescript.suggest.includeAutomaticOptionalChainCompletions": true,
+  "typescript.suggest.includeCompletionsForImportStatements": true,
+  "typescript.suggest.includeCompletionsWithInsertText": true,
+  "typescript.suggest.includeCompletionsWithSnippetText": true,
+  "typescript.suggest.jsdoc.generateReturns": true,
+  "typescript.suggest.objectLiteralMethodSnippets.enabled": true,
+  "typescript.referencesCodeLens.enabled": true,
+  "typescript.implementationsCodeLens.enabled": true,
+  "typescript.preferences.quoteStyle": "double",
+  "typescript.format.enable": true,
+  "typescript.format.insertSpaceAfterCommaDelimiter": true,
+  "typescript.format.insertSpaceAfterConstructor": false,
+  "typescript.format.insertSpaceAfterFunctionKeywordForAnonymousFunctions": true,
+  "typescript.format.insertSpaceAfterKeywordsInControlFlowStatements": true,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingEmptyBraces": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingJsxExpressionBraces": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyBraces": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingNonemptyParenthesis": false,
+  "typescript.format.insertSpaceAfterOpeningAndBeforeClosingTemplateStringBraces": false,
+  "typescript.format.insertSpaceAfterSemicolonInForStatements": true,
+  "typescript.format.insertSpaceBeforeAndAfterBinaryOperators": true,
+  "typescript.format.insertSpaceBeforeFunctionParenthesis": false,
+  "typescript.format.placeOpenBraceOnNewLineForControlBlocks": false,
+  "typescript.format.placeOpenBraceOnNewLineForFunctions": false,
+  "typescript.format.semicolons": "insert",
+  "typescript.codeActionsOnSave": {
+    "source.fixAll": "explicit",
+    "source.organizeImports": "explicit"
+  },
+  "typescript.tsserver.experimental.enableProjectDiagnostics": false,
+  "typescript.tsserver.maxTsServerMemory": 4096,
+  "typescript.tsserver.nodePath": "",
+  "typescript.tsserver.pluginPaths": [],
+  "typescript.tsserver.trace": "off",
+  "typescript.tsserver.useSeparateSyntaxServer": true,
+  "typescript.tsserver.watchOptions": {
+    "excludeDirectories": [
+      "node_modules"
+    ],
+    "excludeFiles": [
+      "**/node_modules/**"
+    ]
+  },
+  "typescript.workspaceSymbols.excludeLibrarySymbols": true,
+  "typescript.workspaceSymbols.scope": "allOpenProjects"
+}</content>
+<parameter name="filePath">c:\Users\juan_\OneDrive\Escritorio\Plataforma semántica de educación\.vscode\settings.json
