@@ -111,7 +111,7 @@
 
 /* ── Right panel (fixed) ─────────────────────────────── */
 .rightPanel {
-  position: fixed; top: 57px; right: 0; bottom: 58px;
+  position: fixed; top: 57px; right: 0; bottom: 44px;
   width: 300px; background: #fff;
   border-left: 2.5px solid var(--dark);
   display: flex; flex-direction: column;
@@ -231,44 +231,44 @@
 .typing  { color: rgba(255,255,255,0.4); letter-spacing: 3px; }
 
 /* The actual input bar */
-.bar { padding: 10px 18px 11px; display: flex; flex-direction: column; gap: 6px; }
+.bar { padding: 0; display: flex; flex-direction: column; }
 
 .showChat {
-  width: 100%; text-align: center; padding: 3px;
+  width: 100%; text-align: center; padding: 4px;
   font-size: 11px; font-weight: 700; color: rgba(255,255,255,0.45);
-  background: none; border: none; cursor: pointer; letter-spacing: 0.02em;
+  background: none; border: none; border-bottom: 1px solid rgba(255,255,255,0.08);
+  cursor: pointer; letter-spacing: 0.02em;
 }
 .showChat:hover { color: rgba(255,255,255,0.8); }
 
 .inputRow {
-  display: flex; align-items: center; gap: 10px;
-  background: rgba(255,255,255,0.07);
-  border: 1.5px solid rgba(255,255,255,0.12);
-  border-radius: 12px; padding: 6px 10px 6px 14px;
+  display: flex; align-items: center; gap: 0;
+  padding: 0 12px 0 0;
 }
 
 .tutorTag {
   font-size: 12px; font-weight: 900; color: var(--yellow);
   white-space: nowrap; flex-shrink: 0; letter-spacing: -0.01em;
-  border-right: 1.5px solid rgba(255,255,255,0.15); padding-right: 10px; margin-right: 2px;
+  padding: 0 12px; border-right: 1px solid rgba(255,255,255,0.12);
+  align-self: stretch; display: flex; align-items: center;
 }
 
 .input {
   flex: 1; background: transparent; border: none; outline: none;
   font-size: 13px; font-family: inherit; color: #fff;
-  line-height: 1.5; resize: none; max-height: 80px;
-  overflow-y: hidden; scrollbar-width: none; padding: 3px 0;
+  line-height: 1; resize: none; height: 44px; max-height: 44px;
+  overflow-y: hidden; scrollbar-width: none; padding: 0 12px;
 }
 .input::-webkit-scrollbar { display: none; }
-.input::placeholder { color: rgba(255,255,255,0.38); }
+.input::placeholder { color: rgba(255,255,255,0.35); }
 
 .sendBtn {
-  width: 34px; height: 34px; border-radius: 8px; flex-shrink: 0;
+  width: 30px; height: 30px; border-radius: 7px; flex-shrink: 0;
   border: none; background: var(--yellow); color: var(--dark);
-  font-size: 16px; font-weight: 900; cursor: pointer;
+  font-size: 15px; font-weight: 900; cursor: pointer;
   transition: all 0.12s; display: flex; align-items: center; justify-content: center;
 }
-.sendBtn:hover:not(:disabled) { opacity: 0.85; transform: scale(0.96); }
+.sendBtn:hover:not(:disabled) { opacity: 0.85; transform: scale(0.95); }
 .sendBtn:disabled { opacity: 0.3; cursor: not-allowed; }
 
 /* ── Mobile ──────────────────────────────────────────── */
