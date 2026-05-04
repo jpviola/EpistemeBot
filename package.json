@@ -13,9 +13,10 @@
     "ontology:validate": "node scripts/validate-ontology.js"
   },
   "devDependencies": {
-    "turbo": "^2.0.0",
+    "turbo": "^2.9.8",
     "typescript": "^5.4.0"
   },
+  "packageManager": "npm@10.0.0",
   "engines": {
     "node": ">=20"
   }
