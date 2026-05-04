@@ -6,6 +6,7 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useSession, signOut } from "next-auth/react";
 import s from "./TutorChat.module.css";
+import { UserProfileDropdown } from "./UserProfileDropdown";
 import TimelineRenderer   from "./tool-renderers/TimelineRenderer";
 import MermaidRenderer    from "./tool-renderers/MermaidRenderer";
 import InfographicRenderer from "./tool-renderers/InfographicRenderer";
@@ -59,9 +60,7 @@ interface SessionMeta {
 
 const LEVELS: { id: Level; label: string; short: string }[] = [
   { id: "secondary",  label: "Secundario",   short: "SEC" },
-  { id: "cbc",        label: "CBC",           short: "CBC" },
   { id: "university", label: "Universitario", short: "UNI" },
-  { id: "specialist", label: "Especialista",  short: "ESP" },
 ];
 
 const SUGGESTIONS_BY_INTEREST: Record<string, string[]> = {
@@ -611,6 +610,7 @@ export function TutorChat() {
                 : "Filosofía · Historia · Psicología · Literatura · Arte · Ciencias Sociales"}
             </div>
           </div>
+          <UserProfileDropdown guestId={guestId} />
         </header>
 
         {xpToast && <div className={s.xpToast}>{xpToast}</div>}

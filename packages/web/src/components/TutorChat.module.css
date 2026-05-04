@@ -46,23 +46,24 @@
 .sidebarCollapsed .collapseBtn:hover { background: #FFE566; color: #1a1a2e; border-color: #FFE566; }
 
 /* Sections */
-.sidebarSection { padding: 16px 18px; border-bottom: 2px solid rgba(26, 26, 46, 0.12); }
+.sidebarSection { padding: 10px 14px; border-bottom: 2px solid rgba(26, 26, 46, 0.12); }
 .sidebarCollapsed .sidebarSection { border-bottom-color: rgba(255,255,255,0.07); padding: 8px; }
 
-.sidebarLabel { font-size: 11px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.14em; color: #1a1a2e; display: block; margin-bottom: 10px; opacity: 0.8; }
+.sidebarLabel { font-size: 10px; font-weight: 900; text-transform: uppercase; letter-spacing: 0.14em; color: #1a1a2e; display: block; margin-bottom: 7px; opacity: 0.8; }
 
 /* New chat */
 .newChatBtn {
-  display: flex; align-items: center; justify-content: center; gap: 7px;
-  width: 100%; padding: 9px 12px;
-  background: #FFE566; border: 2px solid #1a1a2e; border-radius: 10px;
-  font-size: 13px; font-weight: 700; color: #1a1a2e;
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 6px 12px;
+  background: #FFE566; border: 2px solid #1a1a2e; border-radius: 8px;
+  font-size: 12px; font-weight: 700; color: #1a1a2e;
   cursor: pointer; transition: all 0.15s; white-space: nowrap;
+  box-shadow: 2px 2px 0 #1a1a2e;
 }
-.newChatBtn:hover { background: #1a1a2e; color: #FFE566; }
+.newChatBtn:hover { background: #1a1a2e; color: #FFE566; box-shadow: none; transform: translate(1px,1px); }
 .sidebarCollapsed .newChatBtn {
-  padding: 9px; background: transparent;
-  border-color: rgba(255,229,102,0.35); color: #FFE566; border-radius: 8px;
+  padding: 7px; background: transparent;
+  border-color: rgba(255,229,102,0.35); color: #FFE566; border-radius: 8px; box-shadow: none;
 }
 .sidebarCollapsed .newChatBtn:hover { background: #FFE566; color: #1a1a2e; border-color: #FFE566; }
 
@@ -100,17 +101,17 @@
 .sidebarCollapsed .levelBtnActive { background: rgba(255,229,102,0.15); border-color: #FFE566; color: #FFE566; }
 
 /* Session list */
-.sessionList { flex: 1; overflow-y: auto; padding: 8px; display: flex; flex-direction: column; gap: 2px; }
+.sessionList { flex: 1; overflow-y: auto; padding: 8px 10px; display: flex; flex-direction: column; gap: 3px; }
 .sessionItem {
-  padding: 9px 10px; border-radius: 8px; cursor: pointer;
+  padding: 10px 12px; border-radius: 8px; cursor: pointer;
   transition: background 0.1s; border: 2px solid transparent;
 }
 .sessionItem:hover { background: rgba(28,25,23,0.05); }
-.sessionItemActive { background: #fff; border-color: #1a1a2e; box-shadow: 4px 4px 0 rgba(26,26,46,1); transform: translate(-1px, -1px); }
+.sessionItemActive { background: #fff; border-color: #1a1a2e; box-shadow: 3px 3px 0 rgba(26,26,46,1); transform: translate(-1px, -1px); }
 .sidebarCollapsed .sessionItem { padding: 8px 4px; text-align: center; }
 .sidebarCollapsed .sessionItemActive { background: rgba(255,255,255,0.1); border-color: rgba(255,255,255,0.3); }
-.sessionItemTitle { font-size: 12px; font-weight: 500; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.sessionItemMeta { font-size: 10px; color: #a8a29e; margin-top: 2px; display: flex; gap: 6px; }
+.sessionItemTitle { font-size: 13px; font-weight: 600; color: #1c1917; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.sessionItemMeta { font-size: 11px; color: #a8a29e; margin-top: 3px; display: flex; gap: 6px; }
 .sessionEmpty {
   padding: 48px 20px;
   text-align: center;

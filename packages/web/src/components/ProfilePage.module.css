@@ -1,0 +1,186 @@
+.loading { display: flex; align-items: center; justify-content: center; height: 100vh; font-size: 16px; color: var(--dark); }
+
+.page {
+  min-height: 100vh; background: var(--cream);
+  font-family: ui-sans-serif, system-ui, sans-serif;
+  padding: 32px 20px 60px;
+}
+
+.container { max-width: 760px; margin: 0 auto; display: flex; flex-direction: column; gap: 20px; }
+
+.backLink {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 700; color: var(--dark);
+  text-decoration: none; padding: 6px 12px;
+  border: 2px solid var(--dark); border-radius: 8px; background: #fff;
+  width: fit-content; transition: all 0.15s; box-shadow: 2px 2px 0 var(--dark);
+}
+.backLink:hover { background: var(--yellow); box-shadow: none; transform: translate(1px,1px); }
+
+/* ── Hero card ── */
+.heroCard {
+  background: #fff; border: 2.5px solid var(--dark); border-radius: 18px;
+  box-shadow: 6px 6px 0 var(--dark);
+  padding: 24px;
+  display: flex; justify-content: space-between; align-items: flex-start; gap: 20px;
+}
+.heroLeft { display: flex; gap: 20px; align-items: flex-start; flex: 1; }
+
+.avatarWrap { position: relative; flex-shrink: 0; }
+.avatarCircle {
+  width: 80px; height: 80px; border-radius: 18px;
+  border: 3px solid var(--dark); background: var(--purple);
+  display: flex; align-items: center; justify-content: center; overflow: hidden;
+  box-shadow: 4px 4px 0 var(--dark);
+}
+.avatarImg { width: 100%; height: 100%; object-fit: cover; }
+.avatarInitials { font-size: 28px; font-weight: 900; color: #fff; }
+
+.avatarUploadBtn {
+  position: absolute; bottom: -8px; right: -8px;
+  width: 28px; height: 28px; border-radius: 8px;
+  border: 2px solid var(--dark); background: var(--yellow);
+  font-size: 13px; cursor: pointer; display: flex; align-items: center; justify-content: center;
+  transition: all 0.12s; box-shadow: 1px 1px 0 var(--dark);
+}
+.avatarUploadBtn:hover { background: var(--dark); }
+.fileInput { display: none; }
+
+.heroInfo { display: flex; flex-direction: column; gap: 6px; flex: 1; min-width: 0; }
+.heroName   { font-size: 22px; font-weight: 900; color: var(--dark); margin: 0; letter-spacing: -0.02em; }
+.heroSchool { font-size: 13px; color: #78716c; margin: 0; font-weight: 600; }
+.heroBio    { font-size: 13px; color: #57534e; margin: 0; line-height: 1.5; }
+.heroEmail  { font-size: 12px; color: #a8a29e; margin: 0; }
+
+.socialRow { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+.socialLink {
+  font-size: 12px; font-weight: 600; color: var(--dark);
+  text-decoration: none; padding: 3px 10px;
+  border: 2px solid var(--dark); border-radius: 999px; background: #fff;
+  transition: background 0.12s;
+}
+.socialLink:hover { background: var(--yellow); }
+
+.interestRow { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 4px; }
+.interestChip {
+  font-size: 12px; font-weight: 700; padding: 3px 10px;
+  background: var(--purple); color: #fff;
+  border: 2px solid var(--dark); border-radius: 999px;
+}
+
+.editBtn {
+  flex-shrink: 0; padding: 8px 16px;
+  font-size: 13px; font-weight: 800; color: var(--dark);
+  background: var(--yellow); border: 2px solid var(--dark); border-radius: 10px;
+  cursor: pointer; transition: all 0.15s; box-shadow: 2px 2px 0 var(--dark);
+  white-space: nowrap;
+}
+.editBtn:hover { background: var(--dark); color: var(--yellow); box-shadow: none; transform: translate(1px,1px); }
+
+/* ── Edit form ── */
+.editCard {
+  background: #fff; border: 2.5px solid var(--dark); border-radius: 18px;
+  box-shadow: 6px 6px 0 var(--dark); padding: 24px;
+  display: flex; flex-direction: column; gap: 18px;
+}
+.editTitle { font-size: 16px; font-weight: 900; color: var(--dark); margin: 0; }
+
+.formGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+.formGroup { display: flex; flex-direction: column; gap: 6px; }
+.label { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: var(--dark); opacity: 0.7; }
+.input, .textarea {
+  padding: 9px 12px; border: 2px solid #d6d3d1; border-radius: 10px;
+  font-size: 14px; font-family: inherit; color: var(--dark);
+  background: #fff; outline: none; transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input:focus, .textarea:focus { border-color: var(--purple); box-shadow: 2px 2px 0 var(--purple); }
+.textarea { resize: vertical; }
+
+.interestPicker { display: flex; flex-wrap: wrap; gap: 6px; }
+.interestOption {
+  padding: 5px 12px; font-size: 12px; font-weight: 600; color: var(--dark);
+  background: #fff; border: 2px solid #d6d3d1; border-radius: 999px;
+  cursor: pointer; transition: all 0.12s;
+}
+.interestOption:hover { border-color: var(--purple); }
+.interestSelected { background: var(--purple); color: #fff; border-color: var(--purple); }
+
+.socialGrid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.socialInputWrap {
+  display: flex; align-items: center;
+  border: 2px solid #d6d3d1; border-radius: 10px; overflow: hidden;
+  transition: border-color 0.15s;
+}
+.socialInputWrap:focus-within { border-color: var(--purple); }
+.socialPrefix {
+  padding: 0 10px; font-size: 14px; background: #faf7f2;
+  border-right: 2px solid #d6d3d1;
+}
+.socialInput {
+  flex: 1; padding: 9px 10px; border: none; outline: none;
+  font-size: 13px; font-family: inherit; color: var(--dark); background: #fff;
+}
+
+.formActions { display: flex; justify-content: flex-end; }
+.saveBtn {
+  padding: 10px 24px; font-size: 14px; font-weight: 800;
+  background: var(--dark); color: var(--yellow);
+  border: 2px solid var(--dark); border-radius: 10px;
+  cursor: pointer; transition: all 0.15s; box-shadow: 3px 3px 0 #a8a29e;
+}
+.saveBtn:hover:not(:disabled) { box-shadow: none; transform: translate(2px,2px); }
+.saveBtn:disabled { opacity: 0.5; cursor: default; }
+
+/* ── Gamification card ── */
+.gamiCard {
+  background: var(--dark); color: #fff;
+  border: 2.5px solid var(--dark); border-radius: 18px;
+  box-shadow: 6px 6px 0 rgba(26,26,46,0.35);
+  padding: 24px; display: flex; flex-direction: column; gap: 18px;
+}
+.gamiHeader { display: flex; align-items: center; gap: 14px; }
+.gamiEmoji  { font-size: 44px; filter: drop-shadow(3px 3px 0 rgba(0,0,0,0.2)); }
+.gamiTitle  { font-size: 20px; font-weight: 900; margin: 0; letter-spacing: -0.02em; }
+.gamiSub    { font-size: 13px; color: rgba(255,255,255,0.6); margin: 4px 0 0; }
+
+.progressWrap { display: flex; flex-direction: column; gap: 4px; }
+.progressBar {
+  height: 10px; background: rgba(255,255,255,0.1); border-radius: 999px;
+  border: 1.5px solid rgba(255,255,255,0.2); overflow: hidden;
+}
+.progressFill {
+  height: 100%; background: var(--yellow); border-radius: 999px;
+  transition: width 0.5s ease;
+}
+.progressLabel { font-size: 11px; color: rgba(255,255,255,0.5); text-align: right; }
+
+.statsGrid {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px;
+}
+.statCard {
+  display: flex; flex-direction: column; gap: 3px;
+  align-items: center; text-align: center;
+  background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.12);
+  border-radius: 12px; padding: 12px 8px;
+}
+.statVal   { font-size: 14px; font-weight: 800; color: #fff; }
+.statLabel { font-size: 10px; color: rgba(255,255,255,0.5); text-transform: uppercase; letter-spacing: 0.07em; font-weight: 700; }
+
+.badgesSection { display: flex; flex-direction: column; gap: 10px; }
+.badgesSectionTitle { font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.1em; color: rgba(255,255,255,0.5); margin: 0; }
+.badgesGrid { display: flex; flex-wrap: wrap; gap: 8px; }
+.badgeCard {
+  display: flex; flex-direction: column; align-items: center; gap: 4px;
+  padding: 10px 12px; border-radius: 12px;
+  background: rgba(255,255,255,0.07); border: 1.5px solid rgba(255,255,255,0.15);
+  min-width: 60px;
+}
+.badgeIcon { font-size: 22px; }
+.badgeName { font-size: 10px; color: rgba(255,255,255,0.7); font-weight: 700; text-align: center; }
+
+/* Guest banner */
+.guestBanner {
+  background: #fffbeb; border: 2px solid #f59e0b; border-radius: 12px;
+  padding: 14px 18px; font-size: 13px; color: #78350f;
+}
+.guestLink { color: var(--purple); font-weight: 700; }
