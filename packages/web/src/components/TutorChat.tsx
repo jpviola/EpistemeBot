@@ -6,7 +6,10 @@ import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
 import { useSession, signOut } from "next-auth/react";
 import s from "./TutorChat.module.css";
-import ToolsPanel from "./ToolsPanel";
+import TimelineRenderer   from "./tool-renderers/TimelineRenderer";
+import MermaidRenderer    from "./tool-renderers/MermaidRenderer";
+import InfographicRenderer from "./tool-renderers/InfographicRenderer";
+import StudyPlanRenderer  from "./tool-renderers/StudyPlanRenderer";
 import { getLevelInfo } from "@/lib/levels";
 import { useTutorStream } from "@/hooks/useTutorStream";
 
@@ -20,12 +23,30 @@ interface Recommendation {
   type:     string;
 }
 
+interface ToolSuggestion {
+  type:   string;   // "timeline" | "concept-map" | "infographic" | "study-plan"
+  label:  string;
+  emoji:  string;
+  prompt: string;
+}
+
+interface ToolResult {
+  type:    string;
+  format:  string;
+  content: string;
+  label:   string;
+  emoji:   string;
+  loading: boolean;
+}
+
 interface Message {
-  role: "user" | "assistant";
+  role: "user" | "assistant" | "tool-result";
   content: string;
   prerequisites?:   Array<{ label: string; reason: string }>;
   relatedConcepts?: Array<{ label: string; relation: string; iri?: string }>;
   recommendations?: Recommendation[];
+  suggestedTools?:  ToolSuggestion[];
+  toolResult?:      ToolResult;
 }
 
 interface SessionMeta {
@@ -101,6 +122,20 @@ function formatDate(iso: string) {
   return new Date(iso).toLocaleDateString("es-AR", { day: "2-digit", month: "short" });
 }
 
+function detectSuggestedTools(question: string): ToolSuggestion[] {
+  const q = question.toLowerCase();
+  const tools: ToolSuggestion[] = [];
+  if (/historia|siglo|año|período|guerra|revolución|independencia|cronología|etapa|proceso|dictadura/.test(q))
+    tools.push({ type: "timeline",     label: "Línea de tiempo",   emoji: "📅", prompt: question });
+  if (/concepto|teoría|filosofía|idea|movimiento|corriente|pensamiento|relación|comparación/.test(q))
+    tools.push({ type: "concept-map",  label: "Mapa conceptual",   emoji: "🗺️", prompt: question });
+  if (/diferencia|versus|comparar|\bvs\b|contraste|similitud|mejor|peor/.test(q))
+    tools.push({ type: "infographic",  label: "Cuadro comparativo",emoji: "📊", prompt: question });
+  if (/estudiar|aprender|entender|examen|preparar|plan|resumen/.test(q))
+    tools.push({ type: "study-plan",   label: "Plan de estudio",   emoji: "📋", prompt: question });
+  return tools.slice(0, 3);
+}
+
 const SendIcon = () => (
   <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor" width="16" height="16">
     <path d="M3.478 2.405a.75.75 0 00-.926.94l2.432 7.905H13.5a.75.75 0 010 1.5H4.984l-2.432 7.905a.75.75 0 00.926.94 60.519 60.519 0 0018.445-8.986.75.75 0 000-1.218A60.517 60.517 0 003.478 2.405z" />
@@ -157,7 +192,6 @@ export function TutorChat() {
   const { startStream, loading }  = useTutorStream();
   const [xpToast,   setXpToast]   = useState<string | null>(null);
   const [profileXp, setProfileXp] = useState<number>(0);
-  const [toolsOpen, setToolsOpen] = useState(false);
 
   const { data: session } = useSession();
   const bottomRef   = useRef<HTMLDivElement>(null);
@@ -307,6 +341,7 @@ export function TutorChat() {
     const isFirst = messages.length === 0;
     // assistantMsgIndex will be messages.length + 1 after we push user + assistant placeholder
     const assistantMsgIndex = messages.length + 1;
+    const suggestedTools = mode === "tutor" ? detectSuggestedTools(question) : [];
     setMessages(prev => [
       ...prev,
       { role: "user", content: question },
@@ -334,13 +369,17 @@ export function TutorChat() {
         updateLastAssistantMessage({ content: `⚠️ ${err}` });
       },
       onDone: (metadata) => {
-        if (mode === "tutor" && metadata.recommendations) {
-          setMessages(prev => {
-            const next = [...prev];
-            if (next[assistantMsgIndex]) next[assistantMsgIndex] = { ...next[assistantMsgIndex], recommendations: metadata.recommendations };
-            return next;
-          });
-        }
+        setMessages(prev => {
+          const next = [...prev];
+          if (next[assistantMsgIndex]) {
+            next[assistantMsgIndex] = {
+              ...next[assistantMsgIndex],
+              ...(metadata.recommendations ? { recommendations: metadata.recommendations } : {}),
+              ...(suggestedTools.length ? { suggestedTools } : {}),
+            };
+          }
+          return next;
+        });
         if (metadata.xpGained) {
           setXpToast(`+${metadata.xpGained} XP`);
           setTimeout(() => setXpToast(null), 2500);
@@ -368,6 +407,45 @@ export function TutorChat() {
       if (i >= 0) next[i] = { ...next[i], content: next[i].content + text };
       return next;
     });
+  }
+
+  async function generateToolInline(tool: ToolSuggestion) {
+    const placeholder: Message = {
+      role: "tool-result",
+      content: "",
+      toolResult: { type: tool.type, format: "", content: "", label: tool.label, emoji: tool.emoji, loading: true },
+    };
+    setMessages(prev => [...prev, placeholder]);
+    try {
+      const res = await fetch("/api/tools", {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ type: tool.type, prompt: tool.prompt }),
+      });
+      const json = await res.json();
+      setMessages(prev => {
+        const next = [...prev];
+        const idx  = next.findLastIndex(m => m.role === "tool-result" && m.toolResult?.loading);
+        if (idx >= 0) {
+          next[idx] = {
+            ...next[idx],
+            toolResult: {
+              type: tool.type, format: json.format ?? "text",
+              content: json.ok ? (json.content ?? "") : `Error: ${json.error}`,
+              label: tool.label, emoji: tool.emoji, loading: false,
+            },
+          };
+        }
+        return next;
+      });
+    } catch (err) {
+      setMessages(prev => {
+        const next = [...prev];
+        const idx  = next.findLastIndex(m => m.role === "tool-result" && m.toolResult?.loading);
+        if (idx >= 0) next[idx] = { ...next[idx], toolResult: { ...next[idx].toolResult!, content: String(err), format: "text", loading: false } };
+        return next;
+      });
+    }
   }
 
   const li = getLevelInfo(profileXp);
@@ -478,14 +556,11 @@ export function TutorChat() {
           )}
         </div>
 
-        {/* Bottom: XP + ranking + auth */}
+        {/* Bottom: técnicas + XP + ranking + auth */}
         <div className={s.sidebarBottom}>
-          <div className={s.sidebarSection}>
-            {!collapsed && <span className={s.sidebarLabel}>Herramientas</span>}
-            <button className={s.newChatBtn} onClick={() => setToolsOpen(true)} title="Abrir herramientas">
-              {collapsed ? "🧰" : "Herramientas"}
-            </button>
-          </div>
+          <Link href="/tecnicas" className={s.techniquesBtn} title="Enséñame técnicas de estudio">
+            {collapsed ? "🧠" : "🧠 Técnicas de estudio"}
+          </Link>
           {guestId && (
             <Link href="/recompensas" className={s.xpBtn} title={`${profileXp} XP · Nivel ${li.level}`}>
               <span className={s.xpEmoji}>{li.emoji}</span>
@@ -570,16 +645,40 @@ export function TutorChat() {
           ) : (
             <div className={s.messagesInner}>
               {messages.map((msg, i) => (
-                <div key={i} className={`${s.messageRow} ${msg.role === "user" ? s.messageRowUser : ""}`}>
+                <div key={i} className={`${s.messageRow} ${msg.role === "user" ? s.messageRowUser : ""} ${msg.role === "tool-result" ? s.messageRowTool : ""}`}>
                   {msg.role === "assistant" && (
                     <div className={`${s.avatar} ${isDebate ? s.avatarDebate : ""}`}>
                       {isDebate ? "⚡" : "S"}
                     </div>
                   )}
                   <div className={s.bubbleWrapper}>
+                    {/* ── Tool result card ─────────────────── */}
+                    {msg.role === "tool-result" && msg.toolResult && (
+                      <div className={s.toolCard}>
+                        <div className={s.toolCardHeader}>
+                          <span className={s.toolCardEmoji}>{msg.toolResult.emoji}</span>
+                          <span className={s.toolCardLabel}>{msg.toolResult.label}</span>
+                        </div>
+                        {msg.toolResult.loading ? (
+                          <div className={s.dots}><div className={s.dot}/><div className={s.dot}/><div className={s.dot}/></div>
+                        ) : msg.toolResult.format === "json" && msg.toolResult.type === "timeline" ? (
+                          <TimelineRenderer json={msg.toolResult.content} />
+                        ) : msg.toolResult.format === "json" && msg.toolResult.type === "infographic" ? (
+                          <InfographicRenderer json={msg.toolResult.content} />
+                        ) : msg.toolResult.format === "json" && msg.toolResult.type === "study-plan" ? (
+                          <StudyPlanRenderer json={msg.toolResult.content} />
+                        ) : msg.toolResult.format === "mermaid" ? (
+                          <MermaidRenderer code={msg.toolResult.content} />
+                        ) : (
+                          <pre className={s.toolCardPre}>{msg.toolResult.content}</pre>
+                        )}
+                      </div>
+                    )}
                     <div className={`${s.bubble} ${
                       msg.role === "user"
                         ? s.bubbleUser
+                        : msg.role === "tool-result"
+                        ? s.bubbleHidden
                         : isDebate
                         ? s.bubbleDebate
                         : s.bubbleAssistant
@@ -645,6 +744,23 @@ export function TutorChat() {
                               title={r.label}
                             >
                               {r.question}
+                            </button>
+                          ))}
+                        </div>
+                      </div>
+                    )}
+                    {msg.role === "assistant" && msg.suggestedTools && msg.suggestedTools.length > 0 && (
+                      <div className={s.toolSuggestions}>
+                        <span className={s.toolSuggestLabel}>Visualizar tema</span>
+                        <div className={s.toolSuggestChips}>
+                          {msg.suggestedTools.map((t, j) => (
+                            <button
+                              key={`t${j}`}
+                              className={s.toolSuggestChip}
+                              onClick={() => generateToolInline(t)}
+                            >
+                              <span>{t.emoji}</span>
+                              <span>{t.label}</span>
                             </button>
                           ))}
                         </div>
@@ -721,7 +837,6 @@ export function TutorChat() {
         </div>
 
       </div>
-      <ToolsPanel open={toolsOpen} onClose={() => setToolsOpen(false)} sessionId={sessionId} guestId={guestId} />
     </div>
   );
 }
