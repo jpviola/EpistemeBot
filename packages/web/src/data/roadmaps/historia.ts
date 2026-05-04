@@ -5,8 +5,8 @@ const historia: RoadmapDef = {
   title: "Historia Universal",
   emoji: "🌍",
   description: "De la prehistoria al siglo XXI: grandes procesos, revoluciones y civilizaciones.",
-  color: "#FF6B6B",
-  darkColor: "#c94f4f",
+  color: "#F51720",
+  darkColor: "#b50f17",
   nodes: [
     { id: "start", label: "¿Qué es la Historia?", emoji: "📜", nodeType: "topic",
       description: "Concepto, fuentes históricas y metodología.",

@@ -5,8 +5,8 @@ const literatura: RoadmapDef = {
   title: "Literatura",
   emoji: "📖",
   description: "Del mito griego al boom latinoamericano: géneros, movimientos y obras clave.",
-  color: "#FFE566",
-  darkColor: "#c8b020",
+  color: "#FF1FA7",
+  darkColor: "#b50075",
   nodes: [
     { id: "start", label: "¿Qué es la Literatura?", emoji: "✍️", nodeType: "topic",
       description: "Concepto, funciones y herramientas de análisis literario.",

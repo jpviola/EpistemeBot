@@ -1,12 +1,14 @@
 /* ── Memphis Design Tokens ── */
 :root {
-  --cream:  #FAF7F2;
-  --dark:   #1a1a2e;
-  --yellow: #FFE566;
-  --coral:  #FF6B6B;
-  --teal:   #4ECDC4;
-  --purple: #6C63FF;
-  --white:  #ffffff;
+  --cream:    #FAF7F2;
+  --dark:     #1a1a2e;
+  --yellow:   #FFD500;   /* eléctrico */
+  --coral:    #FF1FA7;   /* magenta vibrante */
+  --teal:     #00D4D4;   /* cian saturado */
+  --purple:   #5B10C9;   /* violeta profundo */
+  --green:    #00D478;   /* verde neón */
+  --red:      #F51720;   /* rojo vivo */
+  --white:    #ffffff;
 }
 
 *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }

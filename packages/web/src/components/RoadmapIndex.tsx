@@ -43,19 +43,26 @@ export function RoadmapIndex() {
 
             return (
               <Link key={r.slug} href={`/roadmaps/${r.slug}`} className={s.card}>
-                <div className={s.cardTop}>
-                  <span className={s.cardEmoji}>{r.emoji}</span>
-                  <div className={s.cardBadge} style={{ background: r.color }}>
-                    {done > 0 ? `${pct}% completado` : "Sin empezar"}
+                {/* diagonal stripe band using the roadmap accent color */}
+                <div
+                  className={s.cardBand}
+                  style={{ "--band-a": r.color, "--band-b": "#1a1a2e" } as React.CSSProperties}
+                />
+                <div className={s.cardInner}>
+                  <div className={s.cardTop}>
+                    <span className={s.cardEmoji}>{r.emoji}</span>
+                    <div className={s.cardBadge} style={{ background: r.color, color: "#fff", borderColor: r.color }}>
+                      {done > 0 ? `${pct}%` : "Nuevo"}
+                    </div>
                   </div>
-                </div>
-                <h2 className={s.cardTitle}>{r.title}</h2>
-                <p className={s.cardDesc}>{r.description}</p>
-                <div className={s.cardFooter}>
-                  <div className={s.cardProgressBar}>
-                    <div className={s.cardProgressFill} style={{ width: `${pct}%`, background: r.color }} />
+                  <h2 className={s.cardTitle}>{r.title}</h2>
+                  <p className={s.cardDesc}>{r.description}</p>
+                  <div className={s.cardFooter}>
+                    <div className={s.cardProgressBar}>
+                      <div className={s.cardProgressFill} style={{ width: `${pct}%`, background: r.color }} />
+                    </div>
+                    <span className={s.cardCount}>{total} temas</span>
                   </div>
-                  <span className={s.cardCount}>{total} temas</span>
                 </div>
               </Link>
             );

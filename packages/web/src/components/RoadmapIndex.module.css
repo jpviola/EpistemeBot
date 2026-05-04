@@ -1,4 +1,13 @@
-.page { min-height: 100vh; background: var(--cream); font-family: ui-sans-serif, system-ui, sans-serif; padding: 32px 20px 60px; }
+.page {
+  min-height: 100vh; font-family: ui-sans-serif, system-ui, sans-serif;
+  padding: 32px 20px 60px;
+  /* Memphis cross-grid background */
+  background-color: var(--cream);
+  background-image:
+    linear-gradient(rgba(26,26,46,0.055) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,26,46,0.055) 1px, transparent 1px);
+  background-size: 28px 28px;
+}
 .container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
 
 .backBtn {
@@ -10,22 +19,59 @@
 }
 .backBtn:hover { background: var(--yellow); box-shadow: none; transform: translate(1px,1px); }
 
-.hero { display: flex; flex-direction: column; gap: 8px; }
-.heroTitle { font-size: 28px; font-weight: 900; color: var(--dark); margin: 0; letter-spacing: -0.03em; }
-.heroSub { font-size: 15px; color: #57534e; line-height: 1.6; margin: 0; max-width: 600px; }
+/* Hero with diagonal stripe accent */
+.hero {
+  display: flex; flex-direction: column; gap: 8px;
+  padding: 22px 24px;
+  background: var(--dark);
+  border-radius: 18px; border: 2.5px solid var(--dark);
+  box-shadow: 6px 6px 0 var(--yellow);
+  position: relative; overflow: hidden;
+}
+.hero::before {
+  content: "";
+  position: absolute; inset: 0;
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255,255,255,0.04) 0px, rgba(255,255,255,0.04) 6px,
+    transparent 6px, transparent 18px
+  );
+  pointer-events: none;
+}
+.heroTitle {
+  font-size: 28px; font-weight: 900; color: var(--yellow);
+  margin: 0; letter-spacing: -0.03em; position: relative;
+}
+.heroSub {
+  font-size: 15px; color: rgba(255,255,255,0.72);
+  line-height: 1.6; margin: 0; max-width: 600px; position: relative;
+}
 
 .grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
-
 @media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
 
+/* Cards */
 .card {
   background: #fff; border: 2.5px solid var(--dark); border-radius: 18px;
   box-shadow: 5px 5px 0 var(--dark);
-  padding: 22px; text-decoration: none; color: inherit;
-  display: flex; flex-direction: column; gap: 10px;
+  text-decoration: none; color: inherit;
+  display: flex; flex-direction: column;
   transition: transform 0.15s, box-shadow 0.15s;
+  overflow: hidden;
 }
 .card:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--dark); }
+
+/* Stripe header band */
+.cardBand {
+  height: 10px;
+  background-image: repeating-linear-gradient(
+    45deg,
+    var(--band-a, #FFD500) 0px, var(--band-a, #FFD500) 8px,
+    var(--band-b, #1a1a2e) 8px, var(--band-b, #1a1a2e) 16px
+  );
+}
+
+.cardInner { padding: 18px 20px 20px; display: flex; flex-direction: column; gap: 10px; }
 
 .cardTop { display: flex; align-items: flex-start; justify-content: space-between; }
 .cardEmoji { font-size: 32px; filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.1)); }

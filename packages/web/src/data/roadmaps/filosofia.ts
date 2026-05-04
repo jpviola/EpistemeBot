@@ -5,8 +5,8 @@ const filosofia: RoadmapDef = {
   title: "Filosofía",
   emoji: "🦉",
   description: "Del pensamiento antiguo al contemporáneo: lógica, metafísica, ética y más.",
-  color: "#6C63FF",
-  darkColor: "#4c46b8",
+  color: "#5B10C9",
+  darkColor: "#3d0a8a",
   nodes: [
     // ── Inicio ──────────────────────────────────
     { id: "start", label: "¿Qué es la Filosofía?", emoji: "🤔", nodeType: "topic",

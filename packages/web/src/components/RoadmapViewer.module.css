@@ -9,6 +9,8 @@
   display: flex; align-items: center; justify-content: space-between;
   padding: 12px 24px; background: #fff;
   border-bottom: 2.5px solid var(--dark); gap: 16px; flex-shrink: 0;
+  /* coloured stripe accent on the left edge */
+  border-left: 6px solid var(--yellow);
 }
 .headerLeft { display: flex; align-items: center; gap: 12px; min-width: 0; flex: 1; }
 .backBtn {
@@ -37,6 +39,12 @@
 .scroll {
   flex: 1; overflow: auto;
   scrollbar-width: thin; scrollbar-color: #d6d3d1 transparent;
+  /* Memphis cross/plus grid pattern */
+  background-color: var(--cream);
+  background-image:
+    linear-gradient(rgba(26,26,46,0.06) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(26,26,46,0.06) 1px, transparent 1px);
+  background-size: 28px 28px;
 }
 
 /* Center the canvas horizontally */
@@ -62,6 +70,12 @@
   border: 2.5px solid var(--dark); box-shadow: 4px 4px 0 var(--dark);
   color: #fff; font-weight: 900; font-size: 13px; letter-spacing: -0.01em;
   user-select: none;
+  /* diagonal stripe overlay */
+  background-image: repeating-linear-gradient(
+    45deg,
+    rgba(255,255,255,0.10) 0px, rgba(255,255,255,0.10) 5px,
+    transparent 5px, transparent 14px
+  );
 }
 
 /* ── Topic node ──────────────────────────────────────── */

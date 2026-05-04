@@ -5,8 +5,8 @@ const psicologia: RoadmapDef = {
   title: "Psicología",
   emoji: "🧠",
   description: "Desde el psicoanálisis hasta la psicología cognitiva: la mente humana en profundidad.",
-  color: "#4ECDC4",
-  darkColor: "#2d9e97",
+  color: "#00D4D4",
+  darkColor: "#009aaa",
   nodes: [
     { id: "start", label: "¿Qué es la Psicología?", emoji: "🔍", nodeType: "topic",
       description: "Definición, historia y ramas de la psicología.",
