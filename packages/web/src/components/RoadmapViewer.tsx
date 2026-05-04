@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import Link from "next/link";
+import ReactMarkdown from "react-markdown";
 import type { RoadmapDef, RoadmapNodeDef } from "@/data/roadmaps/types";
 import s from "./RoadmapViewer.module.css";
 
@@ -404,7 +405,11 @@ export function RoadmapViewer({ roadmap }: Props) {
               <div key={i} className={`${s.msg} ${m.role === "user" ? s.msgUser : s.msgBot}`}>
                 {m.role === "assistant" && <span className={s.botIcon}>🎓</span>}
                 <div className={s.bubble}>
-                  {m.content || <span className={s.typing}>···</span>}
+                  {m.content
+                    ? m.role === "assistant"
+                      ? <ReactMarkdown>{m.content}</ReactMarkdown>
+                      : m.content
+                    : <span className={s.typing}>···</span>}
                 </div>
               </div>
             ))}
