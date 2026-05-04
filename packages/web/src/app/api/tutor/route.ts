@@ -1,6 +1,6 @@
 import { NextRequest } from "next/server";
 import Anthropic from "@anthropic-ai/sdk";
-import * as pdfjs from "pdfjs-dist/legacy/build/pdf";
+import * as pdfjs from "pdfjs-dist";
 import { OntologyRAG } from "@semhum/api/rag/ontology-rag";
 import { SparqlClient } from "@semhum/api/sparql/client";
 import {
@@ -20,7 +20,7 @@ import { rewardExchange } from "@/lib/gamification";
 import { getRecommendations } from "@/lib/recommendations";
 
 const anthropic = new Anthropic();
-const sparql    = SparqlClient.fromEnv({
+const sparql    = new SparqlClient({
   url:  process.env.GRAPHDB_URL  || "http://localhost:7200",
   repo: process.env.GRAPHDB_REPO || "senhum"
 });
