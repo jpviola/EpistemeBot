@@ -1,6 +1,6 @@
 "use client";
 
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { useEffect, useMemo, useRef, useState, useCallback } from "react";
 import Link from "next/link";
 import type { RoadmapDef, RoadmapNodeDef } from "@/data/roadmaps/types";
 import s from "./RoadmapViewer.module.css";
@@ -9,47 +9,135 @@ type NodeStatus = "pending" | "in_progress" | "done";
 type ChatMsg    = { role: "user" | "assistant"; content: string };
 
 const STATUS_LABEL: Record<NodeStatus, string> = {
-  pending:     "Pendiente",
-  in_progress: "En progreso",
-  done:        "Dominado ✓",
+  pending: "Pendiente", in_progress: "En progreso", done: "Dominado ✓",
 };
 
-function progressKey(slug: string) { return `roadmap_progress_${slug}`; }
+// ── Layout constants ──────────────────────────────────
+const SW   = 260, SH  = 46;   // section node
+const TW   = 186, TH  = 46;   // topic node
+const HGAP = 12;               // horizontal gap between topics
+const RGAP = 10;               // vertical gap between topic rows
+const VC   = 52;               // vertical connector height
+const COLS = 3;                // max topics per row
+const PX   = 64, PY = 48;     // canvas padding
 
-function loadProgress(slug: string): Record<string, NodeStatus> {
-  if (typeof window === "undefined") return {};
-  try {
-    const raw = localStorage.getItem(progressKey(slug));
-    return raw ? JSON.parse(raw) : {};
-  } catch { return {}; }
-}
-
-function saveProgress(slug: string, p: Record<string, NodeStatus>) {
-  try { localStorage.setItem(progressKey(slug), JSON.stringify(p)); } catch {}
-}
-
-// Group nodes: sections + their child topics, in order
+interface LNode { id: string; x: number; y: number; w: number; h: number; def: RoadmapNodeDef }
+interface LPath { d: string; dashed: boolean }
 interface Section { header: RoadmapNodeDef; topics: RoadmapNodeDef[] }
 
 function groupNodes(nodes: RoadmapNodeDef[]): { intro: RoadmapNodeDef[]; sections: Section[] } {
   const intro: RoadmapNodeDef[] = [];
   const sections: Section[] = [];
-  let current: Section | null = null;
-
+  let cur: Section | null = null;
   for (const n of nodes) {
-    if (n.nodeType === "section") {
-      current = { header: n, topics: [] };
-      sections.push(current);
-    } else if (current) {
-      current.topics.push(n);
-    } else {
-      intro.push(n);
-    }
+    if (n.nodeType === "section") { cur = { header: n, topics: [] }; sections.push(cur); }
+    else if (cur) cur.topics.push(n);
+    else intro.push(n);
   }
   return { intro, sections };
 }
 
-interface Props { roadmap: RoadmapDef; }
+function bez(x1: number, y1: number, x2: number, y2: number): string {
+  const my = (y1 + y2) / 2;
+  return `M ${x1} ${y1} C ${x1} ${my} ${x2} ${my} ${x2} ${y2}`;
+}
+
+function computeLayout(intro: RoadmapNodeDef[], sections: Section[]) {
+  const maxRowW = COLS * TW + (COLS - 1) * HGAP;
+  const cw = Math.max(SW, maxRowW) + PX * 2;
+  const cx = cw / 2;
+  const nodes: LNode[] = [];
+  const paths: LPath[] = [];
+  let y = PY;
+
+  function rowNodes(defs: RoadmapNodeDef[], rowY: number): LNode[] {
+    const count = Math.min(defs.length, COLS);
+    const rw = count * TW + (count - 1) * HGAP;
+    let x = cx - rw / 2;
+    return defs.slice(0, count).map(d => {
+      const n: LNode = { id: d.id, x, y: rowY, w: TW, h: TH, def: d };
+      x += TW + HGAP;
+      return n;
+    });
+  }
+
+  // ── Connection: one origin point → fan out to multiple targets ──
+  function fanTo(fromX: number, fromY: number, targets: LNode[]) {
+    for (const t of targets) {
+      paths.push({ d: bez(fromX, fromY, t.x + t.w / 2, t.y), dashed: t.def.nodeType === "optional" });
+    }
+  }
+
+  // ── Connection: multiple sources → one destination point ──
+  function gatherTo(sources: LNode[], toX: number, toY: number) {
+    const bY = sources[0].y + TH;
+    for (const src of sources) {
+      paths.push({ d: bez(src.x + src.w / 2, bY, toX, toY), dashed: false });
+    }
+  }
+
+  let prevSources: LNode[] = [];
+
+  // Intro nodes (before first section)
+  if (intro.length > 0) {
+    const row = rowNodes(intro, y);
+    nodes.push(...row);
+    prevSources = row;
+    y += TH + VC;
+  }
+
+  for (const sec of sections) {
+    // Gather previous topics → section top
+    if (prevSources.length > 0) gatherTo(prevSources, cx, y);
+    else if (y > PY) paths.push({ d: bez(cx, y - VC, cx, y), dashed: false });
+
+    // Section node
+    const sn: LNode = { id: sec.header.id, x: cx - SW / 2, y, w: SW, h: SH, def: sec.header };
+    nodes.push(sn);
+
+    if (sec.topics.length === 0) {
+      prevSources = [sn]; // treat section bottom as source
+      y += SH + VC;
+      continue;
+    }
+
+    // Place topic rows
+    const chunks: RoadmapNodeDef[][] = [];
+    for (let i = 0; i < sec.topics.length; i += COLS) chunks.push(sec.topics.slice(i, i + COLS));
+
+    let rowY = y + SH + VC;
+    const allTopicNodes: LNode[] = [];
+
+    for (const chunk of chunks) {
+      const row = rowNodes(chunk, rowY);
+      nodes.push(...row);
+      allTopicNodes.push(...row);
+      rowY += TH + RGAP;
+    }
+
+    // Section bottom → fan to all topic tops
+    fanTo(cx, y + SH, allTopicNodes);
+
+    prevSources = allTopicNodes;
+    y = rowY - RGAP + VC;
+  }
+
+  return { nodes, paths, width: cw, height: y + PY };
+}
+
+// ── Progress helpers ──────────────────────────────────
+function progressKey(slug: string) { return `roadmap_progress_${slug}`; }
+function loadProgress(slug: string): Record<string, NodeStatus> {
+  if (typeof window === "undefined") return {};
+  try { const r = localStorage.getItem(progressKey(slug)); return r ? JSON.parse(r) : {}; }
+  catch { return {}; }
+}
+function saveProgress(slug: string, p: Record<string, NodeStatus>) {
+  try { localStorage.setItem(progressKey(slug), JSON.stringify(p)); } catch {}
+}
+
+// ── Component ─────────────────────────────────────────
+interface Props { roadmap: RoadmapDef }
 
 export function RoadmapViewer({ roadmap }: Props) {
   const [progress, setProgress]     = useState<Record<string, NodeStatus>>({});
@@ -64,6 +152,7 @@ export function RoadmapViewer({ roadmap }: Props) {
   useEffect(() => { setProgress(loadProgress(roadmap.slug)); }, [roadmap.slug]);
 
   const { intro, sections } = useMemo(() => groupNodes(roadmap.nodes), [roadmap.nodes]);
+  const layout = useMemo(() => computeLayout(intro, sections), [intro, sections]);
 
   const relatedNodes = useMemo(() => {
     if (!panel) return [];
@@ -72,9 +161,7 @@ export function RoadmapViewer({ roadmap }: Props) {
       if (e.source === panel.id) linked.add(e.target);
       if (e.target === panel.id) linked.add(e.source);
     });
-    return roadmap.nodes
-      .filter(n => linked.has(n.id) && n.nodeType !== "section")
-      .slice(0, 6);
+    return roadmap.nodes.filter(n => linked.has(n.id) && n.nodeType !== "section").slice(0, 6);
   }, [panel, roadmap]);
 
   const total     = roadmap.nodes.filter(n => n.nodeType !== "section").length;
@@ -82,30 +169,24 @@ export function RoadmapViewer({ roadmap }: Props) {
   const pct       = total ? Math.round((doneCount / total) * 100) : 0;
 
   function setStatus(id: string, st: NodeStatus) {
-    setProgress(prev => {
-      const next = { ...prev, [id]: st };
-      saveProgress(roadmap.slug, next);
-      return next;
-    });
+    setProgress(prev => { const next = { ...prev, [id]: st }; saveProgress(roadmap.slug, next); return next; });
   }
+
+  const openPanel = useCallback((node: RoadmapNodeDef) => {
+    setPanel(prev => prev?.id === node.id ? null : node);
+  }, []);
 
   const panelStatus: NodeStatus = panel ? (progress[panel.id] ?? "pending") : "pending";
 
-  // ── Chat ──────────────────────────────────────────
-  useEffect(() => {
-    chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
-  }, [chatMsgs]);
+  // ── Chat ──────────────────────────────────────────────
+  useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMsgs]);
 
   async function sendMessage() {
     const q = chatInput.trim();
     if (!q || streaming) return;
     const history = chatMsgs;
-    const updated: ChatMsg[] = [...history, { role: "user", content: q }];
-    setChatMsgs([...updated, { role: "assistant", content: "" }]);
-    setChatInput("");
-    setDrawerOpen(true);
-    setStreaming(true);
-
+    setChatMsgs([...history, { role: "user", content: q }, { role: "assistant", content: "" }]);
+    setChatInput(""); setDrawerOpen(true); setStreaming(true);
     try {
       const res = await fetch("/api/roadmap-chat", {
         method: "POST",
@@ -119,32 +200,21 @@ export function RoadmapViewer({ roadmap }: Props) {
         const { done, value } = await reader.read();
         if (done) break;
         buf += dec.decode(value, { stream: true });
-        const parts = buf.split("\n\n");
-        buf = parts.pop() ?? "";
+        const parts = buf.split("\n\n"); buf = parts.pop() ?? "";
         for (const part of parts) {
           const line = part.startsWith("data: ") ? part.slice(6) : part;
           if (line === "[DONE]") continue;
           try {
             const json = JSON.parse(line);
-            if (json.text) {
-              setChatMsgs(prev => {
-                const copy = [...prev];
-                copy[copy.length - 1] = { ...copy[copy.length - 1], content: copy[copy.length - 1].content + json.text };
-                return copy;
-              });
-            }
+            if (json.text) setChatMsgs(prev => {
+              const c = [...prev]; c[c.length - 1] = { ...c[c.length - 1], content: c[c.length - 1].content + json.text }; return c;
+            });
           } catch {}
         }
       }
     } catch {
-      setChatMsgs(prev => {
-        const copy = [...prev];
-        copy[copy.length - 1] = { ...copy[copy.length - 1], content: "Error al conectar con el tutor." };
-        return copy;
-      });
-    } finally {
-      setStreaming(false);
-    }
+      setChatMsgs(prev => { const c = [...prev]; c[c.length - 1] = { ...c[c.length - 1], content: "Error al conectar." }; return c; });
+    } finally { setStreaming(false); }
   }
 
   function handleKey(e: React.KeyboardEvent) {
@@ -156,10 +226,6 @@ export function RoadmapViewer({ roadmap }: Props) {
     setPanel(null);
     setTimeout(() => inputRef.current?.focus(), 50);
   }
-
-  const openPanel = useCallback((node: RoadmapNodeDef) => {
-    setPanel(prev => prev?.id === node.id ? null : node);
-  }, []);
 
   return (
     <div className={s.root}>
@@ -182,34 +248,78 @@ export function RoadmapViewer({ roadmap }: Props) {
         </div>
       </div>
 
-      {/* ── Scrollable content ── */}
+      {/* ── Canvas ── */}
       <div className={s.scroll}>
-        <div className={`${s.content} ${panel ? s.contentShifted : ""}`}>
-
-          {/* Intro nodes (before first section) */}
-          {intro.length > 0 && (
-            <div className={s.introRow}>
-              {intro.map(n => (
-                <TopicCard key={n.id} node={n} status={progress[n.id] ?? "pending"} accent={roadmap.color} onClick={openPanel} active={panel?.id === n.id} />
+        <div className={s.canvasOuter}>
+          <div
+            className={s.canvas}
+            style={{ width: layout.width, height: layout.height }}
+          >
+            {/* SVG connections */}
+            <svg
+              className={s.svg}
+              width={layout.width}
+              height={layout.height}
+              aria-hidden="true"
+            >
+              {layout.paths.map((p, i) => (
+                <path
+                  key={i}
+                  d={p.d}
+                  fill="none"
+                  stroke="#c8c5c0"
+                  strokeWidth={2}
+                  strokeDasharray={p.dashed ? "6 4" : undefined}
+                />
               ))}
-            </div>
-          )}
+            </svg>
 
-          {/* Sections */}
-          {sections.map(sec => (
-            <div key={sec.header.id} className={s.section}>
-              <div className={s.sectionHeader} style={{ background: roadmap.color }}>
-                {sec.header.emoji && <span className={s.sectionEmoji}>{sec.header.emoji}</span>}
-                <span className={s.sectionLabel}>{sec.header.label}</span>
-              </div>
-              <div className={s.topicsGrid}>
-                {sec.topics.map(n => (
-                  <TopicCard key={n.id} node={n} status={progress[n.id] ?? "pending"} accent={roadmap.color} onClick={openPanel} active={panel?.id === n.id} />
-                ))}
-              </div>
-            </div>
-          ))}
+            {/* Nodes */}
+            {layout.nodes.map(n => {
+              const status: NodeStatus = progress[n.id] ?? "pending";
+              const isSection  = n.def.nodeType === "section";
+              const isOptional = n.def.nodeType === "optional";
+              const isActive   = panel?.id === n.id;
 
+              if (isSection) {
+                return (
+                  <div
+                    key={n.id}
+                    className={s.sectionNode}
+                    style={{ left: n.x, top: n.y, width: n.w, background: roadmap.color }}
+                  >
+                    {n.def.emoji && <span className={s.nodeEmoji}>{n.def.emoji}</span>}
+                    <span>{n.def.label}</span>
+                  </div>
+                );
+              }
+
+              return (
+                <button
+                  key={n.id}
+                  className={[
+                    s.topicNode,
+                    isOptional              ? s.nodeOptional   : "",
+                    status === "in_progress"? s.nodeInProgress : "",
+                    status === "done"       ? s.nodeDone       : "",
+                    isActive                ? s.nodeActive     : "",
+                  ].join(" ")}
+                  style={{
+                    left: n.x, top: n.y, width: n.w,
+                    borderColor: isOptional ? undefined : roadmap.color,
+                    ...(isActive ? { boxShadow: `4px 4px 0 ${roadmap.color}` } : {}),
+                  }}
+                  onClick={() => openPanel(n.def)}
+                >
+                  {status === "done"        && <span className={s.checkBadge} style={{ background: roadmap.color }}>✓</span>}
+                  {status === "in_progress" && <span className={s.dotBadge} />}
+                  {n.def.emoji && <span className={s.nodeEmoji}>{n.def.emoji}</span>}
+                  <span className={s.nodeLabel}>{n.def.label}</span>
+                  {isOptional && <span className={s.optTag}>opt</span>}
+                </button>
+              );
+            })}
+          </div>
         </div>
       </div>
 
@@ -226,7 +336,6 @@ export function RoadmapViewer({ roadmap }: Props) {
           </div>
 
           <div className={s.panelBody}>
-
             <div className={s.statusRow}>
               {(["pending", "in_progress", "done"] as NodeStatus[]).map(st => (
                 <button
@@ -248,8 +357,7 @@ export function RoadmapViewer({ roadmap }: Props) {
                 <div className={s.chips}>
                   {relatedNodes.map(n => (
                     <button key={n.id} className={s.chip} onClick={() => setPanel(n)}>
-                      {n.emoji && <span>{n.emoji}</span>}
-                      {n.label}
+                      {n.emoji && <span>{n.emoji}</span>}{n.label}
                     </button>
                   ))}
                 </div>
@@ -259,7 +367,6 @@ export function RoadmapViewer({ roadmap }: Props) {
             <button className={s.askBtn} onClick={() => askAboutTopic(panel)}>
               🎓 Preguntarle al tutor →
             </button>
-
           </div>
         </div>
       )}
@@ -280,7 +387,6 @@ export function RoadmapViewer({ roadmap }: Props) {
             <div ref={chatEndRef} />
           </div>
         )}
-
         <div className={s.bar}>
           {chatMsgs.length > 0 && !drawerOpen && (
             <button className={s.showChat} onClick={() => setDrawerOpen(true)}>
@@ -310,43 +416,5 @@ export function RoadmapViewer({ roadmap }: Props) {
       </div>
 
     </div>
-  );
-}
-
-// ── Topic card ────────────────────────────────────────
-interface CardProps {
-  node: RoadmapNodeDef;
-  status: NodeStatus;
-  accent: string;
-  active: boolean;
-  onClick: (n: RoadmapNodeDef) => void;
-}
-
-function TopicCard({ node, status, accent, active, onClick }: CardProps) {
-  const isOptional = node.nodeType === "optional";
-  return (
-    <button
-      className={[
-        s.card,
-        isOptional              ? s.cardOptional    : "",
-        status === "in_progress"? s.cardInProgress  : "",
-        status === "done"       ? s.cardDone        : "",
-        active                  ? s.cardActive      : "",
-      ].join(" ")}
-      style={
-        active
-          ? { borderColor: accent, boxShadow: `4px 4px 0 ${accent}` }
-          : status === "done"
-          ? { borderColor: accent }
-          : {}
-      }
-      onClick={() => onClick(node)}
-    >
-      {status === "done"        && <span className={s.cardCheck} style={{ background: accent }}>✓</span>}
-      {status === "in_progress" && <span className={s.cardDot} />}
-      {node.emoji && <span className={s.cardEmoji}>{node.emoji}</span>}
-      <span className={s.cardLabel}>{node.label}</span>
-      {isOptional && <span className={s.cardOpt}>opcional</span>}
-    </button>
   );
 }
