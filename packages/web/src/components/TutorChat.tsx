@@ -8,6 +8,7 @@ import remarkGfm from "remark-gfm";
 import { useSession, signOut } from "next-auth/react";
 import s from "./TutorChat.module.css";
 import { UserProfileDropdown } from "./UserProfileDropdown";
+import { Logo } from "./Logo";
 import TimelineRenderer   from "./tool-renderers/TimelineRenderer";
 import MermaidRenderer    from "./tool-renderers/MermaidRenderer";
 import InfographicRenderer from "./tool-renderers/InfographicRenderer";
@@ -468,7 +469,7 @@ export function TutorChat() {
         <div className={s.sidebarTop}>
           {!collapsed && (
             <Link href="/" className={s.logo}>
-              Episteme<span className={s.logoAccent}>Bot</span>
+              <Logo />
             </Link>
           )}
           <button

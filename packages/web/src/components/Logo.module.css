@@ -1,0 +1,21 @@
+.root {
+  font-weight: 900;
+  letter-spacing: -0.03em;
+  white-space: nowrap;
+  line-height: 1;
+  /* inherits font-size from parent so it works at any scale */
+}
+
+.pi {
+  color: var(--yellow);
+  font-size: 1.45em;
+  display: inline-block;
+  vertical-align: -0.08em;
+  line-height: 0.85;
+  /* slight drop shadow to make it pop */
+  filter: drop-shadow(1px 1px 0 rgba(0,0,0,0.25));
+}
+
+.bot {
+  color: var(--coral); /* magenta */
+}

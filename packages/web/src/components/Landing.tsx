@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { MemphisBackground } from "./MemphisBackground";
+import { Logo } from "./Logo";
 import s from "./Landing.module.css";
 
 const TOOLS = [
@@ -87,7 +88,7 @@ export function Landing() {
       {/* ── Nav ── */}
       <nav className={s.nav}>
         <div className={s.navLogo}>
-          Episteme<span className={s.navLogoAccent}>Bot</span>
+          <Logo />
         </div>
         <div className={s.navLinks}>
           <a href="#herramientas" className={s.navLink}>Herramientas</a>
@@ -412,7 +413,7 @@ export function Landing() {
       <footer className={s.footer}>
         <div className={s.footerLeft}>
           <div className={s.footerLogo}>
-            Episteme<span className={s.footerLogoAccent}>Bot</span>
+            <Logo />
           </div>
           <div className={s.footerTagline}>Plataforma semántica de educación en humanidades</div>
         </div>

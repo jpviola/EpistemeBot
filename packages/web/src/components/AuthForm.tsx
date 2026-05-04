@@ -4,6 +4,7 @@ import { useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
+import { Logo } from "./Logo";
 import s from "./AuthForm.module.css";
 
 interface Props { mode: "login" | "register"; }
@@ -120,7 +121,7 @@ export function AuthForm({ mode }: Props) {
     <div className={s.page}>
       <div className={s.card}>
         <Link href="/" className={s.logo}>
-          Episteme<span className={s.logoAccent}>Bot</span>
+          <Logo />
         </Link>
 
         {/* Step indicator (register only) */}
