@@ -11,7 +11,7 @@
   min-width: 180px; justify-content: center;
 }
 .sectionEmoji { font-size: 15px; }
-.sectionLabel { }
+.sectionLabel {}
 
 /* Topic node */
 .topic {
@@ -28,9 +28,11 @@
 .topicOptional {
   background: #faf7f2; border-style: dashed;
   box-shadow: 2px 2px 0 #c8c5c0;
-  border-color: #a8a29e; color: #78716c;
+  border-color: #a8a29e !important; color: #78716c;
 }
 .topicOptional:hover { box-shadow: 3px 3px 0 #c8c5c0; }
+
+.topicInProgress { background: #fef9c3; }
 
 .topicDone { background: #f0fdf4; }
 
@@ -44,6 +46,7 @@
   flex-shrink: 0;
 }
 
+/* Status badges */
 .doneCheck {
   position: absolute; top: -8px; right: -8px;
   width: 18px; height: 18px; border-radius: 50%;
@@ -51,4 +54,10 @@
   font-size: 10px; font-weight: 900;
   display: flex; align-items: center; justify-content: center;
   border: 2px solid #1a1a2e;
+}
+
+.progressDot {
+  position: absolute; top: -6px; right: -6px;
+  width: 14px; height: 14px; border-radius: 50%;
+  background: #f59e0b; border: 2px solid #1a1a2e;
 }

@@ -5,10 +5,12 @@ import { Handle, Position, type NodeProps } from "@xyflow/react";
 import type { RoadmapNodeDef } from "@/data/roadmaps/types";
 import s from "./RoadmapNode.module.css";
 
-type RoadmapNodeData = RoadmapNodeDef & { accentColor: string; done?: boolean };
+type NodeStatus = "pending" | "in_progress" | "done";
+type RoadmapNodeData = RoadmapNodeDef & { accentColor: string; status?: NodeStatus };
 
 function RoadmapNodeComponent({ data }: NodeProps) {
   const d = data as RoadmapNodeData;
+  const status = d.status ?? "pending";
 
   if (d.nodeType === "section") {
     return (
@@ -23,16 +25,28 @@ function RoadmapNodeComponent({ data }: NodeProps) {
     );
   }
 
-  const isOptional = d.nodeType === "optional";
+  const isOptional   = d.nodeType === "optional";
+  const isInProgress = status === "in_progress";
+  const isDone       = status === "done";
 
   return (
     <>
       <Handle type="target" position={Position.Top} className={s.handle} />
       <div
-        className={`${s.topic} ${isOptional ? s.topicOptional : ""} ${d.done ? s.topicDone : ""}`}
-        style={d.done ? { borderColor: d.accentColor } : isOptional ? {} : { borderColor: d.accentColor }}
+        className={[
+          s.topic,
+          isOptional   ? s.topicOptional    : "",
+          isInProgress ? s.topicInProgress  : "",
+          isDone       ? s.topicDone        : "",
+        ].join(" ")}
+        style={
+          isDone       ? { borderColor: d.accentColor } :
+          isOptional   ? {} :
+                         { borderColor: d.accentColor }
+        }
       >
-        {d.done && <span className={s.doneCheck}>✓</span>}
+        {isDone       && <span className={s.doneCheck}>✓</span>}
+        {isInProgress && <span className={s.progressDot} />}
         {d.emoji && <span className={s.topicEmoji}>{d.emoji}</span>}
         <span className={s.topicLabel}>{d.label}</span>
         {isOptional && <span className={s.optTag}>opcional</span>}
