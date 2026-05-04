@@ -2,21 +2,11 @@
 
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import Link from "next/link";
-import {
-  ReactFlow, Background, Controls, useNodesState, useEdgesState,
-  type NodeMouseHandler,
-} from "@xyflow/react";
-import "@xyflow/react/dist/style.css";
-
 import type { RoadmapDef, RoadmapNodeDef } from "@/data/roadmaps/types";
-import { buildLayoutedGraph } from "@/lib/roadmap-layout";
-import RoadmapNodeComponent from "./roadmap/RoadmapNode";
 import s from "./RoadmapViewer.module.css";
 
 type NodeStatus = "pending" | "in_progress" | "done";
-type ChatMsg = { role: "user" | "assistant"; content: string };
-
-const NODE_TYPES = { roadmapNode: RoadmapNodeComponent };
+type ChatMsg    = { role: "user" | "assistant"; content: string };
 
 const STATUS_LABEL: Record<NodeStatus, string> = {
   pending:     "Pendiente",
@@ -38,6 +28,27 @@ function saveProgress(slug: string, p: Record<string, NodeStatus>) {
   try { localStorage.setItem(progressKey(slug), JSON.stringify(p)); } catch {}
 }
 
+// Group nodes: sections + their child topics, in order
+interface Section { header: RoadmapNodeDef; topics: RoadmapNodeDef[] }
+
+function groupNodes(nodes: RoadmapNodeDef[]): { intro: RoadmapNodeDef[]; sections: Section[] } {
+  const intro: RoadmapNodeDef[] = [];
+  const sections: Section[] = [];
+  let current: Section | null = null;
+
+  for (const n of nodes) {
+    if (n.nodeType === "section") {
+      current = { header: n, topics: [] };
+      sections.push(current);
+    } else if (current) {
+      current.topics.push(n);
+    } else {
+      intro.push(n);
+    }
+  }
+  return { intro, sections };
+}
+
 interface Props { roadmap: RoadmapDef; }
 
 export function RoadmapViewer({ roadmap }: Props) {
@@ -52,39 +63,7 @@ export function RoadmapViewer({ roadmap }: Props) {
 
   useEffect(() => { setProgress(loadProgress(roadmap.slug)); }, [roadmap.slug]);
 
-  const { nodes: baseNodes, edges: baseEdges } = useMemo(
-    () => buildLayoutedGraph(roadmap.nodes, roadmap.edges, roadmap.color),
-    [roadmap],
-  );
-
-  const nodesWithStatus = useMemo(() =>
-    baseNodes.map(n => ({
-      ...n,
-      data: { ...n.data, status: progress[n.id] ?? "pending" },
-    })),
-    [baseNodes, progress],
-  );
-
-  const [nodes, , onNodesChange] = useNodesState(nodesWithStatus);
-  const [edges, , onEdgesChange] = useEdgesState(baseEdges);
-
-  useEffect(() => {
-    onNodesChange(nodesWithStatus.map(n => ({ type: "reset" as const, item: n })));
-  }, [progress, nodesWithStatus, onNodesChange]);
-
-  const onNodeClick: NodeMouseHandler = useCallback((_evt, node) => {
-    const def = roadmap.nodes.find(n => n.id === node.id);
-    if (!def || def.nodeType === "section") return;
-    setPanel(def);
-  }, [roadmap.nodes]);
-
-  function setStatus(id: string, st: NodeStatus) {
-    setProgress(prev => {
-      const next = { ...prev, [id]: st };
-      saveProgress(roadmap.slug, next);
-      return next;
-    });
-  }
+  const { intro, sections } = useMemo(() => groupNodes(roadmap.nodes), [roadmap.nodes]);
 
   const relatedNodes = useMemo(() => {
     if (!panel) return [];
@@ -96,13 +75,23 @@ export function RoadmapViewer({ roadmap }: Props) {
     return roadmap.nodes
       .filter(n => linked.has(n.id) && n.nodeType !== "section")
       .slice(0, 6);
-  }, [panel, roadmap.edges, roadmap.nodes]);
+  }, [panel, roadmap]);
 
   const total     = roadmap.nodes.filter(n => n.nodeType !== "section").length;
   const doneCount = roadmap.nodes.filter(n => n.nodeType !== "section" && progress[n.id] === "done").length;
   const pct       = total ? Math.round((doneCount / total) * 100) : 0;
 
-  // ── Chat ──────────────────────────────────────────────
+  function setStatus(id: string, st: NodeStatus) {
+    setProgress(prev => {
+      const next = { ...prev, [id]: st };
+      saveProgress(roadmap.slug, next);
+      return next;
+    });
+  }
+
+  const panelStatus: NodeStatus = panel ? (progress[panel.id] ?? "pending") : "pending";
+
+  // ── Chat ──────────────────────────────────────────
   useEffect(() => {
     chatEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chatMsgs]);
@@ -121,12 +110,7 @@ export function RoadmapViewer({ roadmap }: Props) {
       const res = await fetch("/api/roadmap-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({
-          question: q,
-          history,
-          subject: roadmap.slug,
-          topicLabel: panel?.label,
-        }),
+        body: JSON.stringify({ question: q, history, subject: roadmap.slug, topicLabel: panel?.label }),
       });
       const reader = res.body!.getReader();
       const dec = new TextDecoder();
@@ -145,10 +129,7 @@ export function RoadmapViewer({ roadmap }: Props) {
             if (json.text) {
               setChatMsgs(prev => {
                 const copy = [...prev];
-                copy[copy.length - 1] = {
-                  ...copy[copy.length - 1],
-                  content: copy[copy.length - 1].content + json.text,
-                };
+                copy[copy.length - 1] = { ...copy[copy.length - 1], content: copy[copy.length - 1].content + json.text };
                 return copy;
               });
             }
@@ -170,14 +151,15 @@ export function RoadmapViewer({ roadmap }: Props) {
     if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); sendMessage(); }
   }
 
-  function askAboutTopic() {
-    if (!panel) return;
-    setChatInput(panel.tutorPrompt ?? `Explicame el tema: ${panel.label}`);
+  function askAboutTopic(node: RoadmapNodeDef) {
+    setChatInput(node.tutorPrompt ?? `Explicame el tema: ${node.label}`);
     setPanel(null);
     setTimeout(() => inputRef.current?.focus(), 50);
   }
 
-  const panelStatus = panel ? (progress[panel.id] ?? "pending") : "pending";
+  const openPanel = useCallback((node: RoadmapNodeDef) => {
+    setPanel(prev => prev?.id === node.id ? null : node);
+  }, []);
 
   return (
     <div className={s.root}>
@@ -200,101 +182,99 @@ export function RoadmapViewer({ roadmap }: Props) {
         </div>
       </div>
 
-      {/* ── Main (canvas + right panel) ── */}
-      <div className={s.main}>
+      {/* ── Scrollable content ── */}
+      <div className={s.scroll}>
+        <div className={`${s.content} ${panel ? s.contentShifted : ""}`}>
 
-        <div className={s.canvas}>
-          <ReactFlow
-            nodes={nodes}
-            edges={edges}
-            nodeTypes={NODE_TYPES}
-            onNodesChange={onNodesChange}
-            onEdgesChange={onEdgesChange}
-            onNodeClick={onNodeClick}
-            fitView
-            fitViewOptions={{ padding: 0.15 }}
-            minZoom={0.25}
-            maxZoom={2}
-            proOptions={{ hideAttribution: true }}
-          >
-            <Background color="#e7e5e4" gap={20} size={1} />
-            <Controls showInteractive={false} />
-          </ReactFlow>
-        </div>
-
-        {panel && (
-          <div className={s.rightPanel}>
-
-            <div className={s.panelHeader} style={{ background: roadmap.color }}>
-              <span className={s.panelEmoji}>{panel.emoji ?? "📚"}</span>
-              <div className={s.panelHeaderText}>
-                <h2 className={s.panelTitle}>{panel.label}</h2>
-                {panel.nodeType === "optional" && (
-                  <span className={s.optionalBadge}>opcional</span>
-                )}
-              </div>
-              <button className={s.panelClose} onClick={() => setPanel(null)}>✕</button>
+          {/* Intro nodes (before first section) */}
+          {intro.length > 0 && (
+            <div className={s.introRow}>
+              {intro.map(n => (
+                <TopicCard key={n.id} node={n} status={progress[n.id] ?? "pending"} accent={roadmap.color} onClick={openPanel} active={panel?.id === n.id} />
+              ))}
             </div>
+          )}
 
-            <div className={s.panelBody}>
-
-              {/* Status */}
-              <div className={s.statusRow}>
-                {(["pending", "in_progress", "done"] as NodeStatus[]).map(st => (
-                  <button
-                    key={st}
-                    className={`${s.statusBtn} ${panelStatus === st ? s.statusBtnActive : ""}`}
-                    data-status={st}
-                    onClick={() => setStatus(panel.id, st)}
-                  >
-                    {STATUS_LABEL[st]}
-                  </button>
+          {/* Sections */}
+          {sections.map(sec => (
+            <div key={sec.header.id} className={s.section}>
+              <div className={s.sectionHeader} style={{ background: roadmap.color }}>
+                {sec.header.emoji && <span className={s.sectionEmoji}>{sec.header.emoji}</span>}
+                <span className={s.sectionLabel}>{sec.header.label}</span>
+              </div>
+              <div className={s.topicsGrid}>
+                {sec.topics.map(n => (
+                  <TopicCard key={n.id} node={n} status={progress[n.id] ?? "pending"} accent={roadmap.color} onClick={openPanel} active={panel?.id === n.id} />
                 ))}
               </div>
-
-              {/* Description */}
-              <p className={s.panelDesc}>{panel.description}</p>
-
-              {/* Related topics */}
-              {relatedNodes.length > 0 && (
-                <div className={s.related}>
-                  <p className={s.relatedTitle}>Temas relacionados</p>
-                  <div className={s.relatedChips}>
-                    {relatedNodes.map(n => (
-                      <button
-                        key={n.id}
-                        className={s.chip}
-                        onClick={() => setPanel(n)}
-                      >
-                        {n.emoji && <span>{n.emoji}</span>}
-                        {n.label}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-              )}
-
-              {/* Ask tutor */}
-              <button className={s.askBtn} onClick={askAboutTopic}>
-                🎓 Preguntarle al tutor sobre este tema →
-              </button>
-
             </div>
-          </div>
-        )}
+          ))}
 
+        </div>
       </div>
+
+      {/* ── Right panel (fixed) ── */}
+      {panel && (
+        <div className={s.rightPanel}>
+          <div className={s.panelHeader} style={{ background: roadmap.color }}>
+            <span className={s.panelEmoji}>{panel.emoji ?? "📚"}</span>
+            <div className={s.panelHeaderText}>
+              <h2 className={s.panelTitle}>{panel.label}</h2>
+              {panel.nodeType === "optional" && <span className={s.optBadge}>opcional</span>}
+            </div>
+            <button className={s.panelClose} onClick={() => setPanel(null)}>✕</button>
+          </div>
+
+          <div className={s.panelBody}>
+
+            <div className={s.statusRow}>
+              {(["pending", "in_progress", "done"] as NodeStatus[]).map(st => (
+                <button
+                  key={st}
+                  className={`${s.statusBtn} ${panelStatus === st ? s.statusActive : ""}`}
+                  data-status={st}
+                  onClick={() => setStatus(panel.id, st)}
+                >
+                  {STATUS_LABEL[st]}
+                </button>
+              ))}
+            </div>
+
+            <p className={s.panelDesc}>{panel.description}</p>
+
+            {relatedNodes.length > 0 && (
+              <div className={s.related}>
+                <p className={s.relatedTitle}>Temas relacionados</p>
+                <div className={s.chips}>
+                  {relatedNodes.map(n => (
+                    <button key={n.id} className={s.chip} onClick={() => setPanel(n)}>
+                      {n.emoji && <span>{n.emoji}</span>}
+                      {n.label}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <button className={s.askBtn} onClick={() => askAboutTopic(panel)}>
+              🎓 Preguntarle al tutor →
+            </button>
+
+          </div>
+        </div>
+      )}
 
       {/* ── Chat zone ── */}
       <div className={s.chatZone}>
-
         {drawerOpen && chatMsgs.length > 0 && (
           <div className={s.drawer}>
             <button className={s.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>
             {chatMsgs.map((m, i) => (
               <div key={i} className={`${s.msg} ${m.role === "user" ? s.msgUser : s.msgBot}`}>
                 {m.role === "assistant" && <span className={s.botIcon}>🎓</span>}
-                <div className={s.bubble}>{m.content || <span className={s.typing}>···</span>}</div>
+                <div className={s.bubble}>
+                  {m.content || <span className={s.typing}>···</span>}
+                </div>
               </div>
             ))}
             <div ref={chatEndRef} />
@@ -327,8 +307,46 @@ export function RoadmapViewer({ roadmap }: Props) {
             </button>
           </div>
         </div>
-
       </div>
+
     </div>
+  );
+}
+
+// ── Topic card ────────────────────────────────────────
+interface CardProps {
+  node: RoadmapNodeDef;
+  status: NodeStatus;
+  accent: string;
+  active: boolean;
+  onClick: (n: RoadmapNodeDef) => void;
+}
+
+function TopicCard({ node, status, accent, active, onClick }: CardProps) {
+  const isOptional = node.nodeType === "optional";
+  return (
+    <button
+      className={[
+        s.card,
+        isOptional              ? s.cardOptional    : "",
+        status === "in_progress"? s.cardInProgress  : "",
+        status === "done"       ? s.cardDone        : "",
+        active                  ? s.cardActive      : "",
+      ].join(" ")}
+      style={
+        active
+          ? { borderColor: accent, boxShadow: `4px 4px 0 ${accent}` }
+          : status === "done"
+          ? { borderColor: accent }
+          : {}
+      }
+      onClick={() => onClick(node)}
+    >
+      {status === "done"        && <span className={s.cardCheck} style={{ background: accent }}>✓</span>}
+      {status === "in_progress" && <span className={s.cardDot} />}
+      {node.emoji && <span className={s.cardEmoji}>{node.emoji}</span>}
+      <span className={s.cardLabel}>{node.label}</span>
+      {isOptional && <span className={s.cardOpt}>opcional</span>}
+    </button>
   );
 }
