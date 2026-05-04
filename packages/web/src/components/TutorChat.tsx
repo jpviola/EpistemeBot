@@ -474,7 +474,6 @@ export function TutorChat() {
 
         {/* Nueva conversación */}
         <div className={s.sidebarSection}>
-          {!collapsed && <span className={s.sidebarLabel}>Conversación</span>}
           <button className={s.newChatBtn} onClick={startNewChat} title="Nueva conversación">
             {collapsed ? "+" : "+ Nueva conversación"}
           </button>
@@ -555,37 +554,21 @@ export function TutorChat() {
           )}
         </div>
 
-        {/* Bottom: técnicas + XP + ranking + auth */}
+        {/* Bottom: técnicas + prompting + ranking + auth */}
         <div className={s.sidebarBottom}>
-          <Link href="/tecnicas" className={s.techniquesBtn} title="Enséñame técnicas de estudio">
+          <Link href="/tecnicas" className={s.techniquesBtn} title="Técnicas de estudio">
             {collapsed ? "🧠" : "🧠 Técnicas de estudio"}
           </Link>
-          {guestId && (
-            <Link href="/recompensas" className={s.xpBtn} title={`${profileXp} XP · Nivel ${li.level}`}>
-              <span className={s.xpEmoji}>{li.emoji}</span>
-              {!collapsed && (
-                <>
-                  <span className={s.xpVal}>{profileXp} XP</span>
-                  <span className={s.xpLvl}>Nv.{li.level} {li.title}</span>
-                </>
-              )}
-            </Link>
-          )}
+          <Link href="/prompting" className={s.techniquesBtn} title="Aprendé prompting">
+            {collapsed ? "🤖" : "🤖 Aprendé prompting"}
+          </Link>
           <div className={s.bottomRow}>
             <Link href="/ranking" className={s.rankBtn} title="Ranking">🏆</Link>
             {session?.user ? (
-              session.user.role === "teacher" ? (
+              session.user.role === "teacher" && (
                 <Link href="/teacher" className={s.authBtn} title="Panel docente">
                   {collapsed ? "📋" : "Panel docente"}
                 </Link>
-              ) : (
-                <button
-                  onClick={() => signOut()}
-                  className={s.authBtn}
-                  title={session.user.name ?? session.user.email ?? ""}
-                >
-                  {collapsed ? "👤" : (session.user.name?.split(" ")[0] ?? session.user.email?.split("@")[0])}
-                </button>
               )
             ) : (
               <Link href="/login" className={s.authBtn} title="Iniciar sesión">
