@@ -554,7 +554,7 @@ export function TutorChat() {
           )}
         </div>
 
-        {/* Bottom: técnicas + prompting + ranking + auth */}
+        {/* Bottom: técnicas + prompting + auth */}
         <div className={s.sidebarBottom}>
           <Link href="/tecnicas" className={s.techniquesBtn} title="Técnicas de estudio">
             {collapsed ? "🧠" : "🧠 Técnicas de estudio"}
@@ -562,20 +562,17 @@ export function TutorChat() {
           <Link href="/prompting" className={s.techniquesBtn} title="Aprendé prompting">
             {collapsed ? "🤖" : "🤖 Aprendé prompting"}
           </Link>
-          <div className={s.bottomRow}>
-            <Link href="/ranking" className={s.rankBtn} title="Ranking">🏆</Link>
-            {session?.user ? (
-              session.user.role === "teacher" && (
-                <Link href="/teacher" className={s.authBtn} title="Panel docente">
-                  {collapsed ? "📋" : "Panel docente"}
-                </Link>
-              )
-            ) : (
-              <Link href="/login" className={s.authBtn} title="Iniciar sesión">
-                {collapsed ? "🔑" : "Iniciar sesión"}
+          {session?.user ? (
+            session.user.role === "teacher" && (
+              <Link href="/teacher" className={s.authBtn} title="Panel docente">
+                {collapsed ? "📋" : "Panel docente"}
               </Link>
-            )}
-          </div>
+            )
+          ) : (
+            <Link href="/login" className={s.authBtn} title="Iniciar sesión">
+              {collapsed ? "🔑" : "Iniciar sesión"}
+            </Link>
+          )}
         </div>
       </aside>
 

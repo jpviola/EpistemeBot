@@ -180,7 +180,8 @@
 .headerDebateTitle { color: #FF6B6B; }
 
 /* Messages */
-.messages { flex: 1; overflow-y: auto; background: #FAFAF7; }
+.messages { flex: 1; overflow-y: auto; background: #FAFAF7; scrollbar-width: none; }
+.messages::-webkit-scrollbar { display: none; }
 .messagesInner { max-width: 700px; margin: 0 auto; padding: 28px 24px; display: flex; flex-direction: column; gap: 20px; }
 
 /* Empty state */
