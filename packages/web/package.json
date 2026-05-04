@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@aws-sdk/client-s3": "^3.0.0",
+    "@dagrejs/dagre": "^3.0.0",
     "@excalidraw/excalidraw": "^0.17.3",
     "@libsql/client": "^0.17.3",
     "@prisma/adapter-libsql": "^7.8.0",
@@ -17,6 +18,7 @@
     "@semhum/api": "*",
     "@sentry/node": "^8.8.0",
     "@sentry/react": "^8.8.0",
+    "@xyflow/react": "^12.10.2",
     "bcryptjs": "^3.0.3",
     "hot-shots": "^11.0.0",
     "mermaid": "^10.4.0",

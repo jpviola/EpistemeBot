@@ -1,0 +1,44 @@
+.page { min-height: 100vh; background: var(--cream); font-family: ui-sans-serif, system-ui, sans-serif; padding: 32px 20px 60px; }
+.container { max-width: 900px; margin: 0 auto; display: flex; flex-direction: column; gap: 28px; }
+
+.backBtn {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 13px; font-weight: 700; color: var(--dark);
+  text-decoration: none; padding: 6px 12px;
+  border: 2px solid var(--dark); border-radius: 8px; background: #fff;
+  width: fit-content; transition: all 0.15s; box-shadow: 2px 2px 0 var(--dark);
+}
+.backBtn:hover { background: var(--yellow); box-shadow: none; transform: translate(1px,1px); }
+
+.hero { display: flex; flex-direction: column; gap: 8px; }
+.heroTitle { font-size: 28px; font-weight: 900; color: var(--dark); margin: 0; letter-spacing: -0.03em; }
+.heroSub { font-size: 15px; color: #57534e; line-height: 1.6; margin: 0; max-width: 600px; }
+
+.grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 18px; }
+
+@media (max-width: 600px) { .grid { grid-template-columns: 1fr; } }
+
+.card {
+  background: #fff; border: 2.5px solid var(--dark); border-radius: 18px;
+  box-shadow: 5px 5px 0 var(--dark);
+  padding: 22px; text-decoration: none; color: inherit;
+  display: flex; flex-direction: column; gap: 10px;
+  transition: transform 0.15s, box-shadow 0.15s;
+}
+.card:hover { transform: translate(-2px,-2px); box-shadow: 7px 7px 0 var(--dark); }
+
+.cardTop { display: flex; align-items: flex-start; justify-content: space-between; }
+.cardEmoji { font-size: 32px; filter: drop-shadow(2px 2px 0 rgba(0,0,0,0.1)); }
+.cardBadge {
+  font-size: 10px; font-weight: 800; padding: 3px 10px;
+  border-radius: 999px; color: var(--dark);
+  border: 2px solid var(--dark); letter-spacing: 0.02em;
+}
+
+.cardTitle { font-size: 18px; font-weight: 900; color: var(--dark); margin: 0; letter-spacing: -0.02em; }
+.cardDesc  { font-size: 13px; color: #57534e; line-height: 1.5; margin: 0; flex: 1; }
+
+.cardFooter { display: flex; align-items: center; gap: 10px; margin-top: 4px; }
+.cardProgressBar { flex: 1; height: 6px; background: #f0ece6; border-radius: 999px; border: 1.5px solid var(--dark); overflow: hidden; }
+.cardProgressFill { height: 100%; border-radius: 999px; transition: width 0.4s; }
+.cardCount { font-size: 11px; font-weight: 700; color: #a8a29e; white-space: nowrap; }

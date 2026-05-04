@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect, useCallback } from "react";
+import { useSearchParams } from "next/navigation";
 import Link from "next/link";
 import ReactMarkdown from "react-markdown";
 import remarkGfm from "remark-gfm";
@@ -178,6 +179,7 @@ const ClipIcon = () => (
 );
 
 export function TutorChat() {
+  const searchParams = useSearchParams();
   const [guestId,   setGuestId]   = useState<string>("");
   const [collapsed, setCollapsed] = useState(false);
   const [mode,      setMode]      = useState<Mode>("tutor");
@@ -215,6 +217,12 @@ export function TutorChat() {
 
   useEffect(() => { if (guestId) loadSessions(guestId); }, [guestId, loadSessions]);
   useEffect(() => { bottomRef.current?.scrollIntoView({ behavior: "smooth" }); }, [messages]);
+
+  // Pre-fill from roadmap ?q= param
+  useEffect(() => {
+    const q = searchParams?.get("q");
+    if (q) setInput(decodeURIComponent(q));
+  }, [searchParams]);
 
   useEffect(() => {
     const el = textareaRef.current;
@@ -554,8 +562,11 @@ export function TutorChat() {
           )}
         </div>
 
-        {/* Bottom: técnicas + prompting + auth */}
+        {/* Bottom: trayectos + técnicas + prompting + auth */}
         <div className={s.sidebarBottom}>
+          <Link href="/roadmaps" className={s.techniquesBtn} title="Trayectos de estudio">
+            {collapsed ? "🗺️" : "🗺️ Trayectos de estudio"}
+          </Link>
           <Link href="/tecnicas" className={s.techniquesBtn} title="Técnicas de estudio">
             {collapsed ? "🧠" : "🧠 Técnicas de estudio"}
           </Link>
