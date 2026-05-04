@@ -336,6 +336,8 @@ export function RoadmapViewer({ roadmap }: Props) {
           </div>
 
           <div className={s.panelBody}>
+
+            {/* Status */}
             <div className={s.statusRow}>
               {(["pending", "in_progress", "done"] as NodeStatus[]).map(st => (
                 <button
@@ -349,8 +351,31 @@ export function RoadmapViewer({ roadmap }: Props) {
               ))}
             </div>
 
-            <p className={s.panelDesc}>{panel.description}</p>
+            {/* Intro */}
+            <div className={s.intro}>
+              <p className={s.introLabel}>Introducción</p>
+              <p className={s.introText}>{panel.description}</p>
+            </div>
 
+            {/* Tutor invite */}
+            <div className={s.tutorCard}>
+              <div className={s.tutorCardTop}>
+                <span className={s.tutorCardIcon}>🎓</span>
+                <p className={s.tutorCardTitle}>Preguntale al tutor</p>
+              </div>
+              <p className={s.tutorCardHint}>
+                Podés pedir una explicación, ejemplos, o compararlo con otros temas.
+              </p>
+              <button
+                className={s.tutorCardBtn}
+                style={{ background: roadmap.color }}
+                onClick={() => askAboutTopic(panel)}
+              >
+                Empezar conversación →
+              </button>
+            </div>
+
+            {/* Related topics */}
             {relatedNodes.length > 0 && (
               <div className={s.related}>
                 <p className={s.relatedTitle}>Temas relacionados</p>
@@ -364,15 +389,14 @@ export function RoadmapViewer({ roadmap }: Props) {
               </div>
             )}
 
-            <button className={s.askBtn} onClick={() => askAboutTopic(panel)}>
-              🎓 Preguntarle al tutor →
-            </button>
           </div>
         </div>
       )}
 
       {/* ── Chat zone ── */}
       <div className={s.chatZone}>
+
+        {/* Drawer (messages) */}
         {drawerOpen && chatMsgs.length > 0 && (
           <div className={s.drawer}>
             <button className={s.drawerClose} onClick={() => setDrawerOpen(false)}>✕</button>
@@ -387,13 +411,16 @@ export function RoadmapViewer({ roadmap }: Props) {
             <div ref={chatEndRef} />
           </div>
         )}
+
+        {/* Bar */}
         <div className={s.bar}>
           {chatMsgs.length > 0 && !drawerOpen && (
             <button className={s.showChat} onClick={() => setDrawerOpen(true)}>
-              ↑ Ver conversación ({chatMsgs.length} mensajes)
+              ↑ {chatMsgs.length} mensajes — Ver conversación
             </button>
           )}
           <div className={s.inputRow}>
+            <span className={s.tutorTag}>🎓 Tutor</span>
             <textarea
               ref={inputRef}
               className={s.input}
@@ -407,12 +434,12 @@ export function RoadmapViewer({ roadmap }: Props) {
               className={s.sendBtn}
               onClick={sendMessage}
               disabled={!chatInput.trim() || streaming}
-              style={{ background: roadmap.color }}
             >
               {streaming ? "…" : "↑"}
             </button>
           </div>
         </div>
+
       </div>
 
     </div>
